@@ -18,7 +18,7 @@
             <span class="text-3xl text-white">✨</span>
           </div>
           <div>
-            <span class="text-slate-800 text-2xl font-bold tracking-tight">Modern UI</span>
+            <span class="text-slate-800 text-2xl font-bold tracking-tight">MascotLogin</span>
             <p class="text-slate-500 text-sm">{{ t.welcomeBack }}</p>
           </div>
         </div>

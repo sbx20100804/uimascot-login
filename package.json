@@ -1,13 +1,24 @@
 {
-  "name": "bauhaus-login",
+  "name": "mascot-login",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "A beautiful interactive login page with animated mascot characters",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
+  "keywords": [
+    "vue",
+    "login",
+    "animation",
+    "gsap",
+    "mascot",
+    "interactive"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "vue": "^3.4.21",
     "gsap": "^3.12.5"
