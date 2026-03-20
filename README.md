@@ -59,11 +59,6 @@ npm run build
 npm run preview
 ```
 
-## 🧪 Test Credentials
-
-- **Email**: design@modern.com
-- **Password**: password
-
 ## 🛠️ Tech Stack
 
 - **Vue 3** - Progressive JavaScript framework (Composition API)

@@ -157,7 +157,7 @@
 
       <div class="mt-8 text-center">
         <div class="text-4xl mb-4">🎨</div>
-        <p class="text-slate-400 text-sm">{{ t.testCredentials }}</p>
+        <p class="text-slate-400 text-sm">Select your preferred language</p>
       </div>
     </div>
   </div>

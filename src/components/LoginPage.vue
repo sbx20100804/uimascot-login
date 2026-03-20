@@ -431,16 +431,11 @@ async function handleSubmit() {
 
   isLoading.value = false
 
-  if (email.value === 'design@modern.com' && password.value === 'password') {
-    isSuccess.value = true
-    loginStatus.value = 'success'
-    setTimeout(() => {
-      emit('login', { email: email.value, password: password.value })
-    }, 800)
-  } else {
-    isSuccess.value = false
-    triggerError()
-  }
+  isSuccess.value = true
+  loginStatus.value = 'success'
+  setTimeout(() => {
+    emit('login', { email: email.value, password: password.value })
+  }, 800)
 }
 
 function handleResetPassword() {

@@ -41,7 +41,6 @@ export const translations = {
     pleaseEnterEmailPassword: 'Please enter both email and password',
     pleaseEnterValidEmail: 'Please enter a valid email address',
     passwordTooShort: 'Password must be at least 6 characters',
-    testCredentials: 'Test: design@modern.com / password',
   },
   zh: {
     selectLanguage: '选择语言',
@@ -85,7 +84,6 @@ export const translations = {
     pleaseEnterEmailPassword: '请输入邮箱和密码',
     pleaseEnterValidEmail: '请输入有效的邮箱地址',
     passwordTooShort: '密码至少需要 6 个字符',
-    testCredentials: '测试账号: design@modern.com / password',
   },
   ja: {
     selectLanguage: '言語を選択',
@@ -125,7 +123,6 @@ export const translations = {
     pleaseEnterEmailPassword: 'メールアドレスとパスワードの両方を入力してください',
     pleaseEnterValidEmail: '有効なメールアドレスを入力してください',
     passwordTooShort: 'パスワードは少なくとも6文字必要です',
-    testCredentials: 'テスト: design@modern.com / password',
   },
   es: {
     selectLanguage: 'Seleccionar idioma',
@@ -165,7 +162,6 @@ export const translations = {
     pleaseEnterEmailPassword: 'Por favor, ingresa correo y contraseña',
     pleaseEnterValidEmail: 'Por favor, ingresa un correo electrónico válido',
     passwordTooShort: 'La contraseña debe tener al menos 6 caracteres',
-    testCredentials: 'Prueba: design@modern.com / password',
   },
   fr: {
     selectLanguage: 'Choisir la langue',
@@ -205,7 +201,6 @@ export const translations = {
     pleaseEnterEmailPassword: 'Veuillez saisir e-mail et mot de passe',
     pleaseEnterValidEmail: 'Veuillez saisir une adresse e-mail valide',
     passwordTooShort: 'Le mot de passe doit contenir au moins 6 caractères',
-    testCredentials: 'Test: design@modern.com / password',
   },
   de: {
     selectLanguage: 'Sprache auswählen',
@@ -245,7 +240,6 @@ export const translations = {
     pleaseEnterEmailPassword: 'Bitte geben Sie E-Mail und Passwort ein',
     pleaseEnterValidEmail: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
     passwordTooShort: 'Passwort muss mindestens 6 Zeichen lang sein',
-    testCredentials: 'Test: design@modern.com / password',
   },
   ko: {
     selectLanguage: '언어 선택',
@@ -285,7 +279,6 @@ export const translations = {
     pleaseEnterEmailPassword: '이메일과 비밀번호를 입력해 주세요',
     pleaseEnterValidEmail: '유효한 이메일 주소를 입력해 주세요',
     passwordTooShort: '비밀번호는 최소 6자 이상이어야 합니다',
-    testCredentials: '테스트: design@modern.com / password',
   },
   ar: {
     selectLanguage: 'اختر اللغة',
@@ -325,6 +318,5 @@ export const translations = {
     pleaseEnterEmailPassword: 'يرجى إدخال البريد الإلكتروني وكلمة المرور',
     pleaseEnterValidEmail: 'يرجى إدخال عنوان بريد إلكتروني صالح',
     passwordTooShort: 'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
-    testCredentials: 'اختبار: design@modern.com / password',
   }
 }
