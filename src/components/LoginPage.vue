@@ -80,6 +80,15 @@
                 {{ showPassword ? '🙈' : '👁️' }}
               </button>
             </div>
+            <div v-if="password" class="space-y-2 mt-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-slate-600">{{ t.passwordStrength }}</span>
+                <span class="text-xs font-bold" :class="passwordStrengthColor">{{ passwordStrengthLabel }}</span>
+              </div>
+              <div class="flex gap-1.5">
+                <div v-for="i in 4" :key="i" class="h-1.5 flex-1 rounded-full transition-all duration-300" :class="getStrengthBarColor(i)"></div>
+              </div>
+            </div>
           </div>
 
           <div class="flex justify-end">
@@ -122,6 +131,30 @@
             </button>
           </div>
         </form>
+
+        <div class="mt-8">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-slate-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-white text-slate-500">{{ t.orContinueWith }}</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            @click="handlePasskeyLogin"
+            :aria-label="t.signInWithPasskey"
+            class="w-full mt-6 py-4 rounded-xl font-bold text-lg text-slate-700 border-2 border-slate-200 bg-white hover:border-purple-400 hover:bg-purple-50 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+          >
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+            {{ t.signInWithPasskey }}
+          </button>
+        </div>
 
         <p class="mt-10 text-center text-slate-500">
           {{ t.noAccount }}
@@ -281,6 +314,46 @@ const loginPageRef = ref(null)
 
 const t = computed(() => translations[props.language] || translations['en'])
 
+const passwordStrength = computed(() => {
+  const pwd = password.value
+  if (!pwd) return 0
+  let strength = 0
+  if (pwd.length >= 6) strength++
+  if (pwd.length >= 10) strength++
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) strength++
+  if (/[0-9]/.test(pwd)) strength++
+  if (/[^A-Za-z0-9]/.test(pwd)) strength++
+  return Math.min(4, strength)
+})
+
+const passwordStrengthLabel = computed(() => {
+  const strength = passwordStrength.value
+  if (strength === 0) return ''
+  if (strength === 1) return t.value.passwordWeak
+  if (strength === 2) return t.value.passwordFair
+  if (strength === 3) return t.value.passwordGood
+  return t.value.passwordStrong
+})
+
+const passwordStrengthColor = computed(() => {
+  const strength = passwordStrength.value
+  if (strength <= 1) return 'text-rose-600'
+  if (strength === 2) return 'text-amber-600'
+  if (strength === 3) return 'text-blue-600'
+  return 'text-emerald-600'
+})
+
+function getStrengthBarColor(index) {
+  const strength = passwordStrength.value
+  if (index <= strength) {
+    if (strength <= 1) return 'bg-rose-500'
+    if (strength === 2) return 'bg-amber-500'
+    if (strength === 3) return 'bg-blue-500'
+    return 'bg-emerald-500'
+  }
+  return 'bg-slate-200'
+}
+
 function handleEmailFocus() {
   focusState.value = 'email'
   errorMessage.value = ''
@@ -388,6 +461,27 @@ function handleCreateAccount() {
   alert(t.value.accountCreated)
   showCreateAccount.value = false
   newAccount.value = { name: '', email: '', password: '', confirmPassword: '' }
+}
+
+async function handlePasskeyLogin() {
+  if (!window.PublicKeyCredential) {
+    alert('Passkeys are not supported in this browser. Please use a modern browser that supports WebAuthn.')
+    return
+  }
+  
+  isLoading.value = true
+  focusState.value = 'idle'
+  loginStatus.value = 'loading'
+  
+  await new Promise(resolve => setTimeout(resolve, 1500))
+  
+  isLoading.value = false
+  isSuccess.value = true
+  loginStatus.value = 'success'
+  
+  setTimeout(() => {
+    emit('login', { method: 'passkey' })
+  }, 800)
 }
 
 onMounted(() => {
