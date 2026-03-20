@@ -74,7 +74,7 @@
               <button
                 type="button"
                 @click="showPassword = !showPassword"
-                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                :aria-label="showPassword ? t.hidePassword : t.showPassword"
                 class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
               >
                 {{ showPassword ? '🙈' : '👁️' }}
@@ -197,6 +197,7 @@
     <PasskeyModal
       ref="passkeyModalRef"
       :show="showPasskeyModal"
+      :language="language"
       @close="showPasskeyModal = false"
       @success="handlePasskeySuccess"
       @error="handlePasskeyError"
@@ -239,11 +240,11 @@
               class="w-full px-5 py-4 pr-12 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
             />
             <button
-              type="button"
-              @click="showNewPassword = !showNewPassword"
-              :aria-label="showNewPassword ? 'Hide password' : 'Show password'"
-              class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
-            >
+                type="button"
+                @click="showNewPassword = !showNewPassword"
+                :aria-label="showNewPassword ? t.hidePassword : t.showPassword"
+                class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
+              >
               {{ showNewPassword ? '🙈' : '👁️' }}
             </button>
           </div>
@@ -257,13 +258,33 @@
               class="w-full px-5 py-4 pr-12 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
             />
             <button
-              type="button"
-              @click="showConfirmPassword = !showConfirmPassword"
-              :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
-              class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
-            >
+                type="button"
+                @click="showConfirmPassword = !showConfirmPassword"
+                :aria-label="showConfirmPassword ? t.hidePassword : t.showPassword"
+                class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
+              >
               {{ showConfirmPassword ? '🙈' : '👁️' }}
             </button>
+          </div>
+          <div class="mt-4">
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input
+                  id="createPasskey"
+                  v-model="createPasskey"
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+              </div>
+              <div class="ml-3 text-sm">
+                <label for="createPasskey" class="font-medium text-gray-700">
+                  {{ t.createPasskey }}
+                </label>
+                <p class="text-gray-500 mt-1">
+                  {{ t.passkeyDescription }}
+                </p>
+              </div>
+            </div>
           </div>
           <button
             @click="handleCreateAccount"
@@ -312,6 +333,7 @@ const resetEmail = ref('')
 const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 const isPasskeyLoading = ref(false)
+const createPasskey = ref(false)
 const newAccount = ref({
   name: '',
   email: '',
@@ -448,7 +470,7 @@ function handleResetPassword() {
   resetEmail.value = ''
 }
 
-function handleCreateAccount() {
+async function handleCreateAccount() {
   if (!newAccount.value.name || !newAccount.value.email || !newAccount.value.password || !newAccount.value.confirmPassword) {
     alert(t.value.pleaseFillAllFields)
     return
@@ -465,14 +487,64 @@ function handleCreateAccount() {
     alert(t.value.passwordsDoNotMatch)
     return
   }
+
+  if (createPasskey.value) {
+    if (!window.PublicKeyCredential) {
+      alert(t.value.passkeyNotSupported)
+      return
+    }
+
+    try {
+      isPasskeyLoading.value = true
+      
+      const publicKeyCredentialCreationOptions = {
+        challenge: new Uint8Array(32),
+        rp: {
+          name: 'MascotLogin',
+          id: window.location.hostname
+        },
+        user: {
+          id: new TextEncoder().encode(newAccount.value.email),
+          name: newAccount.value.email,
+          displayName: newAccount.value.name
+        },
+        pubKeyCredParams: [
+          { alg: -7, type: 'public-key' },
+          { alg: -257, type: 'public-key' }
+        ],
+        timeout: 60000,
+        authenticatorSelection: {
+          userVerification: 'preferred',
+          requireResidentKey: false
+        }
+      }
+
+      const credential = await navigator.credentials.create({
+        publicKey: publicKeyCredentialCreationOptions
+      })
+
+      if (credential) {
+        console.log('Passkey created successfully:', credential)
+      }
+    } catch (error) {
+      console.error('Passkey creation failed:', error)
+      alert(t.value.passkeyCreationFailed)
+      isPasskeyLoading.value = false
+      return
+    } finally {
+      isPasskeyLoading.value = false
+    }
+  }
+
   alert(t.value.accountCreated)
   showCreateAccount.value = false
   newAccount.value = { name: '', email: '', password: '', confirmPassword: '' }
+  createPasskey.value = false
 }
 
 function handlePasskeyLogin() {
   if (!window.PublicKeyCredential) {
-    alert('Passkeys are not supported in this browser. Please use a modern browser that supports WebAuthn.')
+    alert(t.value.passkeyNotSupported)
     return
   }
   showPasskeyModal.value = true
@@ -488,7 +560,7 @@ function handlePasskeySuccess(credentialData) {
 
 function handlePasskeyError(error) {
   console.error('Passkey error:', error)
-  errorMessage.value = 'Passkey authentication failed. Please try again.'
+  errorMessage.value = t.value.passkeyAuthFailed
   triggerError()
 }
 

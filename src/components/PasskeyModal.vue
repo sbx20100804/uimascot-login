@@ -2,132 +2,147 @@
   <div v-if="isVisible" class="fixed inset-0 z-50 overflow-y-auto">
     <div class="flex min-h-screen items-end justify-center px-4 pb-4 pt-4 sm:items-center sm:p-0">
       <div
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        ref="backdropRef"
+        class="fixed inset-0 bg-gradient-to-br from-purple-900/60 via-blue-900/50 to-indigo-900/60 backdrop-blur-md"
         @click="close"
-        :class="isOpen ? 'opacity-100' : 'opacity-0'"
-      ></div>
+      >
+        <div ref="deco1" class="deco-circle absolute top-10 left-10 w-32 h-32 rounded-full bg-pink-400/20"></div>
+        <div ref="deco2" class="deco-circle absolute bottom-10 right-10 w-24 h-24 rounded-full bg-blue-400/20"></div>
+        <div ref="deco3" class="deco-circle absolute top-1/2 left-1/4 w-16 h-16 rounded-full bg-yellow-400/20"></div>
+      </div>
 
       <div
-        class="relative w-full max-w-sm transform overflow-hidden rounded-2xl bg-white px-6 py-6 text-left shadow-2xl transition-all sm:my-8"
-        :class="isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'"
+        ref="modalRef"
+        class="relative w-full max-w-sm overflow-hidden rounded-3xl bg-white/95 backdrop-blur-xl px-6 py-8 text-left shadow-2xl sm:my-8 border border-white/50"
         role="dialog"
         aria-modal="true"
         aria-labelledby="passkey-modal-title"
       >
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-200/50 to-blue-200/30 rounded-bl-full -z-10"></div>
+        <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-pink-200/40 to-yellow-200/30 rounded-tr-full -z-10"></div>
+        
         <div class="absolute right-4 top-4">
           <button
             type="button"
             @click="close"
-            class="inline-flex items-center justify-center rounded-md p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            class="inline-flex items-center justify-center rounded-full p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all hover:scale-110"
           >
-            <span class="sr-only">Close</span>
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <span class="sr-only">{{ t.close }}</span>
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div class="mt-2">
+        <div ref="contentRef" class="mt-2">
           <div v-if="currentStep === 'initial'" class="text-center">
-            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-50">
-              <svg class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <div ref="iconRef" class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 shadow-lg">
+              <svg class="h-12 w-12 text-purple-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4" />
               </svg>
             </div>
-            <h3 id="passkey-modal-title" class="mt-4 text-xl font-semibold text-gray-900">
-              Sign in with a passkey
+            <h3 id="passkey-modal-title" class="mt-6 text-2xl font-bold bg-gradient-to-r from-purple-700 via-pink-600 to-blue-700 bg-clip-text text-transparent">
+              {{ t.signInWithPasskeyTitle }}
             </h3>
-            <p class="mt-2 text-sm text-gray-500">
-              Use your device's biometrics or security key to sign in.
+            <p class="mt-3 text-sm text-gray-500 leading-relaxed">
+              {{ t.signInWithPasskeyDesc }}
             </p>
           </div>
 
           <div v-else-if="currentStep === 'loading'" class="text-center py-4">
             <div class="flex items-center justify-center">
-              <svg class="animate-spin h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-              </svg>
+              <div ref="loadingRef" class="relative">
+                <div class="absolute inset-0 rounded-full bg-purple-400/30 blur-lg animate-pulse"></div>
+                <svg class="relative h-16 w-16 text-purple-600" viewBox="0 0 24 24" fill="none">
+                  <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+              </div>
             </div>
-            <p class="mt-4 text-sm text-gray-600">Waiting for security key...</p>
-            <p class="mt-1 text-xs text-gray-400">Touch your security key or use biometrics</p>
+            <div class="mt-6 space-y-2">
+              <p class="text-sm text-gray-600 font-medium">{{ t.waitingForSecurityKey }}</p>
+              <p class="text-xs text-gray-400">{{ t.touchYourSecurityKey }}</p>
+            </div>
           </div>
 
           <div v-else-if="currentStep === 'qrcode'" class="text-center">
-            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-              <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 shadow-md">
+              <svg class="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
             </div>
-            <h3 class="mt-4 text-lg font-semibold text-gray-900">
-              Scan with your phone
+            <h3 class="mt-5 text-xl font-bold text-gray-800">
+              {{ t.scanWithYourPhone }}
             </h3>
             <p class="mt-2 text-sm text-gray-500">
-              Use your phone's camera to scan this QR code
+              {{ t.useYourPhoneCamera }}
             </p>
             
-            <div class="mt-6 bg-white p-4 rounded-lg border border-gray-200 inline-block">
-              <div class="w-48 h-48 bg-gray-50 rounded flex items-center justify-center">
+            <div ref="qrRef" class="mt-6 bg-white p-6 rounded-2xl border-2 border-dashed border-purple-200 inline-block shadow-lg">
+              <div class="w-48 h-48 bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50 rounded-xl flex items-center justify-center">
                 <div class="text-center">
-                  <div class="text-6xl mb-2">📱</div>
-                  <div class="text-xs text-gray-400">QR Code</div>
+                  <div class="text-7xl mb-3">📱✨</div>
+                  <div class="text-xs font-medium text-purple-500">{{ t.qrCode }}</div>
                 </div>
               </div>
             </div>
           </div>
 
           <div v-else-if="currentStep === 'success'" class="text-center py-4">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-              <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <div ref="successRef" class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 shadow-lg">
+              <svg class="h-10 w-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 class="mt-4 text-lg font-semibold text-gray-900">
-              Signed in successfully!
+            <h3 class="mt-5 text-xl font-bold text-gray-800">
+              {{ t.signedInSuccessfully }}
             </h3>
             <p class="mt-2 text-sm text-gray-500">
-              Redirecting you...
+              {{ t.redirectingYou }}
             </p>
+            <div class="mt-4 flex justify-center gap-1">
+              <span v-for="i in 3" :key="i" class="w-2 h-2 rounded-full bg-emerald-400" :style="{ animation: `bounce 1.4s ease-in-out infinite ${i * 0.15}s` }"></span>
+            </div>
           </div>
 
           <div v-else-if="currentStep === 'error'" class="text-center py-4">
-            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
-              <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <div ref="errorRef" class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-100 via-pink-100 to-rose-100 shadow-lg">
+              <svg class="h-10 w-10 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h3 class="mt-4 text-lg font-semibold text-gray-900">
-              Something went wrong
+            <h3 class="mt-5 text-xl font-bold text-gray-800">
+              {{ t.somethingWentWrong }}
             </h3>
             <p class="mt-2 text-sm text-gray-500">
               {{ errorMessage }}
             </p>
           </div>
 
-          <div class="mt-6 space-y-3">
+          <div class="mt-8 space-y-3">
             <template v-if="currentStep === 'initial'">
               <button
                 type="button"
                 @click="startAuthentication"
                 :disabled="isAuthenticating"
-                class="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                class="inline-flex w-full items-center justify-center rounded-2xl border border-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 px-5 py-4 text-sm font-bold text-white shadow-lg hover:shadow-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98]"
               >
-                <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                Use security key
+                {{ t.useSecurityKey }}
               </button>
 
               <button
                 type="button"
                 @click="showQRCode"
-                class="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-purple-200 bg-white px-5 py-4 text-sm font-bold text-purple-700 shadow-md hover:bg-purple-50 hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98]"
               >
-                <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                Use a different device
+                {{ t.useADifferentDevice }}
               </button>
             </template>
 
@@ -135,12 +150,12 @@
               <button
                 type="button"
                 @click="goToInitial"
-                class="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-gray-200 bg-white px-5 py-4 text-sm font-bold text-gray-700 shadow-md hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
-                Back
+                {{ t.back }}
               </button>
             </template>
 
@@ -148,9 +163,9 @@
               <button
                 type="button"
                 @click="cancelAuthentication"
-                class="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-gray-200 bg-white px-5 py-4 text-sm font-bold text-gray-700 shadow-md hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                Cancel
+                {{ t.cancel }}
               </button>
             </template>
 
@@ -158,9 +173,9 @@
               <button
                 type="button"
                 @click="goToInitial"
-                class="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-rose-200 bg-white px-5 py-4 text-sm font-bold text-rose-700 shadow-md hover:bg-rose-50 hover:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                Try again
+                {{ t.tryAgain }}
               </button>
             </template>
           </div>
@@ -171,12 +186,18 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed, onMounted } from 'vue'
+import { translations } from '../utils/i18n.js'
+import gsap from 'gsap'
 
 const props = defineProps({
   show: {
     type: Boolean,
     default: false
+  },
+  language: {
+    type: String,
+    default: 'en'
   },
   rpId: {
     type: String,
@@ -190,42 +211,172 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'success', 'error'])
 
+const t = computed(() => translations[props.language] || translations['en'])
 const isVisible = ref(false)
-const isOpen = ref(false)
 const currentStep = ref('initial')
 const isAuthenticating = ref(false)
 const errorMessage = ref('')
+const backdropRef = ref(null)
+const modalRef = ref(null)
+const contentRef = ref(null)
+const iconRef = ref(null)
+const qrRef = ref(null)
+const loadingRef = ref(null)
+const successRef = ref(null)
+const errorRef = ref(null)
+const deco1 = ref(null)
+const deco2 = ref(null)
+const deco3 = ref(null)
 
 watch(() => props.show, async (newVal) => {
   if (newVal) {
     isVisible.value = true
-    await nextTick()
-    isOpen.value = true
     currentStep.value = 'initial'
     errorMessage.value = ''
+    await nextTick()
+    openModal()
   } else {
-    isOpen.value = false
-    setTimeout(() => {
-      isVisible.value = false
-    }, 300)
+    closeModal()
   }
 })
 
-function close() {
-  isOpen.value = false
-  setTimeout(() => {
+function openModal() {
+  const tl = gsap.timeline()
+  
+  gsap.set(backdropRef.value, { opacity: 0 })
+  gsap.set(modalRef.value, { opacity: 0, scale: 0.6, y: 50, rotation: -5 })
+  gsap.set([deco1.value, deco2.value, deco3.value], { scale: 0, opacity: 0 })
+  
+  tl.to(backdropRef.value, {
+    opacity: 1,
+    duration: 0.4,
+    ease: 'power2.out'
+  })
+  .to([deco1.value, deco2.value, deco3.value], {
+    scale: 1,
+    opacity: 1,
+    duration: 0.5,
+    stagger: 0.1,
+    ease: 'back.out(1.5)'
+  }, '-=0.2')
+  .to(modalRef.value, {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    rotation: 0,
+    duration: 0.6,
+    ease: 'elastic.out(1, 0.6)'
+  }, '-=0.3')
+  
+  if (iconRef.value) {
+    tl.to(iconRef.value, {
+      scale: [1, 1.1, 1],
+      duration: 0.6,
+      ease: 'back.out(1.4)'
+    }, '-=0.2')
+  }
+}
+
+function closeModal() {
+  const tl = gsap.timeline()
+  
+  tl.to(modalRef.value, {
+    opacity: 0,
+    scale: 0.7,
+    y: 30,
+    duration: 0.35,
+    ease: 'back.in(1.3)'
+  })
+  .to([deco1.value, deco2.value, deco3.value], {
+    scale: 0,
+    opacity: 0,
+    duration: 0.25,
+    stagger: -0.05,
+    ease: 'power2.in'
+  }, '-=0.15')
+  .to(backdropRef.value, {
+    opacity: 0,
+    duration: 0.3,
+    ease: 'power2.in'
+  }, '-=0.15')
+  .call(() => {
     isVisible.value = false
+  })
+}
+
+function close() {
+  closeModal()
+  setTimeout(() => {
     emit('close')
-  }, 300)
+  }, 400)
+}
+
+function changeStep(newStep) {
+  const tl = gsap.timeline()
+  
+  tl.to(contentRef.value, {
+    opacity: 0,
+    y: -20,
+    scale: 0.95,
+    duration: 0.2,
+    ease: 'power2.in'
+  })
+  .call(() => {
+    currentStep.value = newStep
+  })
+  .set(contentRef.value, { y: 20, scale: 0.95 })
+  .to(contentRef.value, {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    duration: 0.3,
+    ease: 'back.out(1.4)'
+  })
+  
+  nextTick(() => {
+    if (newStep === 'success' && successRef.value) {
+      gsap.fromTo(successRef.value, 
+        { scale: 0, rotation: -180 },
+        { scale: 1, rotation: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' }
+      )
+    } else if (newStep === 'error' && errorRef.value) {
+      gsap.fromTo(errorRef.value,
+        { x: -20, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.4, ease: 'back.out(1.4)' }
+      )
+      gsap.to(errorRef.value, {
+        x: [0, -5, 5, -5, 5, 0],
+        duration: 0.5,
+        delay: 0.2,
+        ease: 'power2.inOut'
+      })
+    } else if (newStep === 'qrcode' && qrRef.value) {
+      gsap.fromTo(qrRef.value,
+        { scale: 0.5, rotation: 10 },
+        { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.5)' }
+      )
+    } else if (newStep === 'loading' && loadingRef.value) {
+      gsap.fromTo(loadingRef.value,
+        { scale: 0 },
+        { scale: 1, duration: 0.4, ease: 'back.out(1.4)' }
+      )
+      gsap.to(loadingRef.value, {
+        rotation: 360,
+        duration: 2,
+        repeat: -1,
+        ease: 'none'
+      })
+    }
+  })
 }
 
 function goToInitial() {
-  currentStep.value = 'initial'
+  changeStep('initial')
   errorMessage.value = ''
 }
 
 function showQRCode() {
-  currentStep.value = 'qrcode'
+  changeStep('qrcode')
 }
 
 function base64UrlToUint8Array(base64UrlString) {
@@ -248,14 +399,14 @@ function uint8ArrayToBase64Url(bytes) {
 
 async function startAuthentication() {
   if (!window.PublicKeyCredential) {
-    errorMessage.value = 'Passkeys are not supported in this browser.'
-    currentStep.value = 'error'
+    errorMessage.value = t.value.passkeyNotSupported
+    changeStep('error')
     emit('error', new Error('WebAuthn not supported'))
     return
   }
 
   isAuthenticating.value = true
-  currentStep.value = 'loading'
+  changeStep('loading')
 
   try {
     const publicKeyCredentialRequestOptions = {
@@ -270,7 +421,7 @@ async function startAuthentication() {
     })
 
     if (credential) {
-      currentStep.value = 'success'
+      changeStep('success')
       
       const credentialData = {
         id: credential.id,
@@ -295,14 +446,14 @@ async function startAuthentication() {
     console.error('Passkey authentication failed:', error)
     
     if (error.name === 'NotAllowedError') {
-      errorMessage.value = 'Authentication was cancelled. Please try again.'
+      errorMessage.value = t.value.authCancelled
     } else if (error.name === 'TimeoutError') {
-      errorMessage.value = 'Authentication timed out. Please try again.'
+      errorMessage.value = t.value.authTimedOut
     } else {
-      errorMessage.value = error.message || 'Failed to authenticate with passkey.'
+      errorMessage.value = error.message || t.value.authFailed
     }
     
-    currentStep.value = 'error'
+    changeStep('error')
     emit('error', error)
   } finally {
     isAuthenticating.value = false
@@ -316,25 +467,26 @@ function cancelAuthentication() {
 defineExpose({
   open: () => {
     isVisible.value = true
-    nextTick().then(() => {
-      isOpen.value = true
-    })
     currentStep.value = 'initial'
+    nextTick().then(() => {
+      openModal()
+    })
   },
   close: close
 })
 </script>
 
 <style scoped>
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
   }
-  to {
-    transform: rotate(360deg);
+  40% {
+    transform: scale(1);
   }
 }
-.animate-spin {
-  animation: spin 1s linear infinite;
+
+.deco-circle {
+  pointer-events: none;
 }
 </style>
