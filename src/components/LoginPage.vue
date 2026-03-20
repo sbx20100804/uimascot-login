@@ -194,53 +194,13 @@
       </div>
     </div>
 
-    <div v-if="showPasskeyModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" @click.self="showPasskeyModal = false">
-      <div class="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="passkey-title">
-        <div class="flex justify-between items-center mb-6">
-          <h2 id="passkey-title" class="text-xl sm:text-2xl font-bold text-slate-800">{{ t.signInWithPasskey }}</h2>
-          <button @click="showPasskeyModal = false" :aria-label="'Close ' + t.signInWithPasskey" class="text-slate-400 hover:text-slate-600 text-2xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">×</button>
-        </div>
-        
-        <div class="space-y-4">
-          <button
-            @click="authenticateWithDevice"
-            :disabled="isPasskeyLoading"
-            class="w-full py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
-          >
-            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-              <path d="m9 12 2 2 4-4"></path>
-            </svg>
-            {{ t.useThisDevice }}
-          </button>
-
-          <div class="relative">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-slate-200"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-4 bg-white text-slate-500">{{ t.orUsePhone }}</span>
-            </div>
-          </div>
-
-          <div class="bg-slate-50 rounded-xl p-6 text-center">
-            <div class="bg-white inline-block p-4 rounded-xl shadow-sm mb-4">
-              <div class="w-32 h-32 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center">
-                <div class="text-center">
-                  <div class="text-4xl mb-2">📱</div>
-                  <div class="text-xs text-slate-500">QR Code</div>
-                </div>
-              </div>
-            </div>
-            <p class="text-sm text-slate-600">{{ t.scanWithPhone }}</p>
-          </div>
-
-          <div class="text-center">
-            <p class="text-xs text-slate-400">{{ t.passkeyInfo }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PasskeyModal
+      ref="passkeyModalRef"
+      :show="showPasskeyModal"
+      @close="showPasskeyModal = false"
+      @success="handlePasskeySuccess"
+      @error="handlePasskeyError"
+    />
 
     <div v-if="showCreateAccount" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" @click.self="showCreateAccount = false">
       <div class="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="create-account-title">
@@ -322,6 +282,7 @@
 import { ref, computed, onMounted } from 'vue'
 import gsap from 'gsap'
 import AbstractInteractiveHero from './AbstractInteractiveHero.vue'
+import PasskeyModal from './PasskeyModal.vue'
 import { translations } from '../utils/i18n.js'
 
 const props = defineProps({
@@ -361,6 +322,7 @@ const newAccount = ref({
 const heroRef = ref(null)
 const buttonRef = ref(null)
 const loginPageRef = ref(null)
+const passkeyModalRef = ref(null)
 
 const t = computed(() => translations[props.language] || translations['en'])
 
@@ -513,25 +475,26 @@ function handleCreateAccount() {
   newAccount.value = { name: '', email: '', password: '', confirmPassword: '' }
 }
 
-async function handlePasskeyLogin() {
+function handlePasskeyLogin() {
   if (!window.PublicKeyCredential) {
     alert('Passkeys are not supported in this browser. Please use a modern browser that supports WebAuthn.')
     return
   }
-  
-  isLoading.value = true
-  focusState.value = 'idle'
-  loginStatus.value = 'loading'
-  
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  
-  isLoading.value = false
+  showPasskeyModal.value = true
+}
+
+function handlePasskeySuccess(credentialData) {
   isSuccess.value = true
   loginStatus.value = 'success'
-  
   setTimeout(() => {
-    emit('login', { method: 'passkey' })
+    emit('login', { method: 'passkey', credential: credentialData })
   }, 800)
+}
+
+function handlePasskeyError(error) {
+  console.error('Passkey error:', error)
+  errorMessage.value = 'Passkey authentication failed. Please try again.'
+  triggerError()
 }
 
 onMounted(() => {
