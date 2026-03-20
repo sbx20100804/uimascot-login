@@ -45,11 +45,12 @@
                 type="email"
                 :placeholder="t.emailPlaceholder"
                 autocomplete="email"
-                class="w-full px-5 py-4 pl-12 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all"
+                :aria-label="t.emailAddress"
+                class="w-full px-5 py-4 pl-12 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
                 @focus="handleEmailFocus"
                 @blur="handleBlur"
               />
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">✉️</span>
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">✉️</span>
             </div>
           </div>
 
@@ -64,15 +65,17 @@
                 :type="showPassword ? 'text' : 'password'"
                 :placeholder="t.passwordPlaceholder"
                 autocomplete="current-password"
-                class="w-full px-5 py-4 pl-12 pr-12 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all"
+                :aria-label="t.password"
+                class="w-full px-5 py-4 pl-12 pr-12 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
                 @focus="handlePasswordFocus"
                 @blur="handleBlur"
               />
-              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">•</span>
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none">•</span>
               <button
                 type="button"
                 @click="showPassword = !showPassword"
-                class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
               >
                 {{ showPassword ? '🙈' : '👁️' }}
               </button>
@@ -80,7 +83,7 @@
           </div>
 
           <div class="flex justify-end">
-            <button type="button" @click="showForgotPassword = true" class="text-sm text-purple-600 hover:text-purple-800 transition-colors font-medium">
+            <button type="button" @click="showForgotPassword = true" :aria-label="t.forgotPassword" class="text-sm text-purple-600 hover:text-purple-800 transition-colors font-medium hover:underline">
               {{ t.forgotPassword }}
             </button>
           </div>
@@ -90,7 +93,8 @@
               ref="buttonRef"
               type="submit"
               :disabled="isLoading || isSuccess"
-              class="login-btn relative w-full py-4 rounded-xl font-bold text-lg text-white overflow-hidden transition-all duration-300 disabled:cursor-not-allowed bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30"
+              :aria-label="t.signInButton"
+              class="login-btn relative w-full py-4 rounded-xl font-bold text-lg text-white overflow-hidden transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-70 bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] active:scale-[0.98]"
               @mouseenter="handleButtonHover"
               @mouseleave="handleButtonLeave"
             >
@@ -128,11 +132,11 @@
       </div>
     </div>
 
-    <div v-if="showForgotPassword" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showForgotPassword = false">
-      <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl">
+    <div v-if="showForgotPassword" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" @click.self="showForgotPassword = false">
+      <div class="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="forgot-password-title">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-slate-800">{{ t.forgotPasswordTitle }}</h2>
-          <button @click="showForgotPassword = false" class="text-slate-400 hover:text-slate-600 text-2xl">×</button>
+          <h2 id="forgot-password-title" class="text-xl sm:text-2xl font-bold text-slate-800">{{ t.forgotPasswordTitle }}</h2>
+          <button @click="showForgotPassword = false" :aria-label="'Close ' + t.forgotPasswordTitle" class="text-slate-400 hover:text-slate-600 text-2xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">×</button>
         </div>
         <p class="text-slate-600 mb-6">{{ t.forgotPasswordDesc }}</p>
         <div class="space-y-4">
@@ -142,12 +146,14 @@
               v-model="resetEmail"
               type="email"
               :placeholder="t.emailPlaceholder"
-              class="w-full px-5 py-4 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all"
+              :aria-label="t.emailAddress"
+              class="w-full px-5 py-4 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
             />
           </div>
           <button
             @click="handleResetPassword"
-            class="w-full py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30 transition-all"
+            :aria-label="t.sendResetLink"
+            class="w-full py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             {{ t.sendResetLink }}
           </button>
@@ -155,11 +161,11 @@
       </div>
     </div>
 
-    <div v-if="showCreateAccount" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" @click.self="showCreateAccount = false">
-      <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div v-if="showCreateAccount" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" @click.self="showCreateAccount = false">
+      <div class="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="create-account-title">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold text-slate-800">{{ t.createAccountTitle }}</h2>
-          <button @click="showCreateAccount = false" class="text-slate-400 hover:text-slate-600 text-2xl">×</button>
+          <h2 id="create-account-title" class="text-xl sm:text-2xl font-bold text-slate-800">{{ t.createAccountTitle }}</h2>
+          <button @click="showCreateAccount = false" :aria-label="'Close ' + t.createAccountTitle" class="text-slate-400 hover:text-slate-600 text-2xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">×</button>
         </div>
         <div class="space-y-4">
           <div>
@@ -168,7 +174,8 @@
               v-model="newAccount.name"
               type="text"
               :placeholder="t.fullNamePlaceholder"
-              class="w-full px-5 py-4 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all"
+              :aria-label="t.fullName"
+              class="w-full px-5 py-4 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
             />
           </div>
           <div>
@@ -177,7 +184,8 @@
               v-model="newAccount.email"
               type="email"
               :placeholder="t.emailPlaceholder"
-              class="w-full px-5 py-4 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all"
+              :aria-label="t.emailAddress"
+              class="w-full px-5 py-4 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
             />
           </div>
           <div class="relative">
@@ -186,12 +194,14 @@
               v-model="newAccount.password"
               :type="showNewPassword ? 'text' : 'password'"
               :placeholder="t.passwordPlaceholder"
-              class="w-full px-5 py-4 pr-12 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all"
+              :aria-label="t.password"
+              class="w-full px-5 py-4 pr-12 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
             />
             <button
               type="button"
               @click="showNewPassword = !showNewPassword"
-              class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              :aria-label="showNewPassword ? 'Hide password' : 'Show password'"
+              class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
             >
               {{ showNewPassword ? '🙈' : '👁️' }}
             </button>
@@ -202,19 +212,22 @@
               v-model="newAccount.confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
               :placeholder="t.passwordPlaceholder"
-              class="w-full px-5 py-4 pr-12 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all"
+              :aria-label="t.confirmPassword"
+              class="w-full px-5 py-4 pr-12 mt-1 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all focus:scale-[1.01] focus:shadow-lg"
             />
             <button
               type="button"
               @click="showConfirmPassword = !showConfirmPassword"
-              class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              :aria-label="showConfirmPassword ? 'Hide password' : 'Show password'"
+              class="absolute right-4 top-[calc(50%+12px)] -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
             >
               {{ showConfirmPassword ? '🙈' : '👁️' }}
             </button>
           </div>
           <button
             @click="handleCreateAccount"
-            class="w-full py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30 transition-all mt-4"
+            :aria-label="t.createAccountButton"
+            class="w-full py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] mt-4"
           >
             {{ t.createAccountButton }}
           </button>
