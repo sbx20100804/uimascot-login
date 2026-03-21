@@ -1,162 +1,49 @@
 <template>
-  <div ref="languagePageRef" class="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-8">
-    <div class="w-full max-w-md">
+  <div class="min-h-screen bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 flex items-center justify-center p-8 relative overflow-hidden">
+    <div class="w-full max-w-lg relative z-10">
       <div class="text-center mb-12">
-        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center shadow-xl mb-6">
-          <span class="text-4xl text-white">✨</span>
+        <div class="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 flex items-center justify-center shadow-2xl mb-6">
+          <span class="text-5xl text-white">✨</span>
         </div>
-        <h1 class="text-3xl font-bold text-slate-800 mb-2">MascotLogin</h1>
-        <p class="text-slate-500">{{ t.selectLanguage }}</p>
+        <h1 class="text-4xl font-bold text-slate-800 mb-3">MascotLogin</h1>
+        <p class="text-slate-500 text-lg">{{ t.selectLanguage }}</p>
       </div>
 
-      <div class="max-h-[400px] overflow-y-auto space-y-3 mb-8 pr-2">
+      <div class="max-h-[450px] overflow-y-auto space-y-3 mb-8 pr-2">
         <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'en' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('en')"
+          v-for="lang in languages"
+          :key="lang.code"
+          :class="[
+            'w-full py-5 px-6 rounded-2xl text-left transition-all duration-300 border-2 flex items-center gap-4 cursor-pointer',
+            selectedLang === lang.code 
+              ? 'border-purple-500 bg-purple-50 shadow-lg' 
+              : 'border-transparent bg-white/80 hover:border-purple-200 hover:bg-purple-50/50 hover:shadow-md hover:scale-[1.02]'
+          ]"
+          @click="selectLanguage(lang.code)"
         >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇬🇧</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">English</div>
-            </div>
-            <div v-if="selectedLang === 'en'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
+          <span class="text-4xl flex-shrink-0">{{ lang.flag }}</span>
+          <div class="flex-1">
+            <div class="text-xl font-bold text-slate-800">{{ lang.name }}</div>
+            <div class="text-sm text-slate-500">{{ lang.native }}</div>
           </div>
-        </button>
-
-        <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'zh' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('zh')"
-        >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇨🇳</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">中文</div>
-            </div>
-            <div v-if="selectedLang === 'zh'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-        </button>
-
-        <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'ja' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('ja')"
-        >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇯🇵</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">日本語</div>
-            </div>
-            <div v-if="selectedLang === 'ja'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-        </button>
-
-        <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'es' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('es')"
-        >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇪🇸</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">Español</div>
-            </div>
-            <div v-if="selectedLang === 'es'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-        </button>
-
-        <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'fr' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('fr')"
-        >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇫🇷</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">Français</div>
-            </div>
-            <div v-if="selectedLang === 'fr'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-        </button>
-
-        <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'de' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('de')"
-        >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇩🇪</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">Deutsch</div>
-            </div>
-            <div v-if="selectedLang === 'de'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-        </button>
-
-        <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'ko' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('ko')"
-        >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇰🇷</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">한국어</div>
-            </div>
-            <div v-if="selectedLang === 'ko'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-        </button>
-
-        <button
-          :class="['language-option w-full py-5 rounded-2xl text-left px-5 transition-all duration-300 border-2', selectedLang === 'ar' ? 'border-purple-500 bg-purple-50' : 'border-transparent bg-white hover:border-purple-200 hover:bg-purple-50/50']"
-          @click="selectLanguage('ar')"
-        >
-          <div class="flex items-center gap-4">
-            <span class="text-3xl">🇸🇦</span>
-            <div class="flex-1">
-              <div class="text-lg font-bold text-slate-800">العربية</div>
-            </div>
-            <div v-if="selectedLang === 'ar'" class="ml-auto">
-              <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
+          <div v-if="selectedLang === lang.code" class="ml-auto">
+            <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+            </svg>
           </div>
         </button>
       </div>
 
       <button
         :disabled="!selectedLang"
-        class="w-full py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-purple-600 to-indigo-700 hover:shadow-lg hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+        class="w-full py-5 px-8 rounded-2xl font-bold text-xl text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] active:scale-[0.98]"
         @click="continueToLogin"
       >
         {{ t.continue }}
       </button>
 
-      <div class="mt-8 text-center">
-        <div class="text-4xl mb-4">🎨</div>
+      <div class="mt-10 text-center">
+        <div class="text-5xl mb-4">🎨</div>
         <p class="text-slate-400 text-sm">{{ t.selectPreferredLanguage }}</p>
       </div>
     </div>
@@ -165,15 +52,40 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import gsap from 'gsap'
 import { translations } from '../utils/i18n.js'
 
-const emit = defineEmits(['languageSelected'])
+const props = defineProps({
+  savedLanguage: {
+    type: String,
+    default: null
+  }
+})
 
-const selectedLang = ref('')
-const languagePageRef = ref(null)
+const emit = defineEmits(['language-selected'])
+
+const selectedLang = ref('en')
+
+const languages = [
+  { code: 'en', name: 'English', native: 'English', flag: '🇬🇧' },
+  { code: 'zh', name: '中文', native: '简体中文', flag: '🇨🇳' },
+  { code: 'ja', name: '日本語', native: '日本語', flag: '🇯🇵' },
+  { code: 'es', name: 'Español', native: 'Español', flag: '🇪🇸' },
+  { code: 'fr', name: 'Français', native: 'Français', flag: '🇫🇷' },
+  { code: 'de', name: 'Deutsch', native: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ko', name: '한국어', native: '한국어', flag: '🇰🇷' },
+  { code: 'ar', name: 'العربية', native: 'العربية', flag: '🇸🇦' }
+]
 
 const t = computed(() => translations[selectedLang.value] || translations['en'])
+
+onMounted(() => {
+  if (props.savedLanguage) {
+    selectedLang.value = props.savedLanguage
+    setTimeout(() => {
+      emit('language-selected', props.savedLanguage)
+    }, 500)
+  }
+})
 
 function selectLanguage(lang) {
   selectedLang.value = lang
@@ -181,27 +93,26 @@ function selectLanguage(lang) {
 
 function continueToLogin() {
   if (selectedLang.value) {
-    emit('languageSelected', selectedLang.value)
+    emit('language-selected', selectedLang.value)
   }
 }
-
-onMounted(() => {
-  gsap.fromTo(
-    languagePageRef.value,
-    { opacity: 0, y: 30 },
-    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
-  )
-})
 </script>
 
 <style scoped>
-.language-option {
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-.language-option:hover:not(.selected) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
 }
 </style>

@@ -1,119 +1,189 @@
-# 🎭 MascotLogin
+# MascotLogin - Beautiful Passkey Authentication Component
 
-A beautiful and interactive login page with animated mascot characters built with Vue 3, Vite, Tailwind CSS, and GSAP.
+<p align="center">
+  <strong>✨ A beautiful, interactive login interface with adorable animated mascots and secure passkey authentication ✨</strong>
+</p>
 
-## ✨ Features
+## 🚀 Features
 
-- 🎨 **Modern UI Design** - Clean and elegant purple/indigo color scheme
-- 🎭 **Animated Characters** - Three adorable geometric mascots (circle, square, capsule)
-- 👀 **Expressive Eyes** - Characters blink and look around naturally
-- 🌐 **Multi-language Support** - English and Chinese (中文)
-- 🔐 **Forgot Password** - Built-in password recovery flow
-- 📝 **Create Account** - Sign up functionality
-- ✨ **Smooth Animations** - Powered by GSAP for buttery-smooth transitions
-- 📱 **Responsive Design** - Works beautifully on all screen sizes
+### 🎨 Stunning UI Design
+- **Beautiful Gradient Backgrounds**: Smooth, animated gradient backgrounds with decorative particles
+- **Light Mode**: Clean, modern light theme design
+- **NeuMorphism Design**: Soft shadows and blurred glass effects
+- **Responsive Layout**: Beautiful on all screen sizes from mobile to desktop
 
-## 🎬 Features Showcase
+### 🎭 Adorable Mascots
+- **Three Animated Characters**: Circle, Square, and Capsule characters with charming animations
+- **Interactive Reactions**: Characters react to user input (email focus, password focus, button hover)
+- **Smooth Transitions**: GSAP-powered animations for a delightful user experience
+- **Blinking Eyes**: Random blinking animations for added personality
+- **Eye Tracking**: Eyes follow your mouse movement for immersive interaction
 
-### Character Animations
-- **Startup**: Characters pop in with elastic animations
-- **Idle**: Gentle breathing and floating motions
-- **Email Focus**: Characters lean in to "peek" at your input
-- **Password Focus**: Characters close their eyes for privacy
-- **Button Hover**: Characters get excited when you hover over the login button
-- **Error**: Characters shake their heads in disappointment
+### 🔐 Passkey Authentication
+- **WebAuthn API Integration**: Real passkey authentication implementation
+- **Multiple Methods**: Support for Windows Hello, fingerprint, and security keys
+- **8 Languages**: Support for English, 中文, 日本語, Español, Français, Deutsch, 한국어, العربية
+- **RTL Support**: Right-to-left language support for Arabic
 
-## 🚀 Quick Start
+### 🎬 Enhanced Animations
+- **Modal Open/Close**: Smooth animations for modal transitions
+- **Step Transitions**: Beautiful step-by-step animations
+- **Loading States**: Elegant loading animations
+- **Success/Error States**: Engaging success and error animations
 
-### Prerequisites
+### ⚡ Advanced Features
+- **Keyboard Navigation**: Full keyboard navigation
+- **Local Storage**: Language preferences saved
+- **Accessibility**: Complete ARIA labels and accessibility features
 
-- Node.js 16+ and npm
-
-### Installation
+## 📦 Installation
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
-cd mascot-login
+git clone https://github.com/your-username/mascotlogin.git
 
 # Install dependencies
 npm install
-```
 
-### Development
-
-```bash
 # Start development server
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+## 🎯 Quick Start
 
-### Build for Production
+### Basic Usage
 
-```bash
-# Build for production
-npm run build
+```vue
+<template>
+  <div>
+    <button @click="openPasskeyModal">Sign in with Passkey</button>
+    <PasskeyModal
+      ref="passkeyModal"
+      :show="showModal"
+      @close="showModal = false"
+      @success="handleSuccess"
+      @error="handleError"
+    />
+  </div>
+</template>
 
-# Preview the build
-npm run preview
+<script setup>
+import { ref } from 'vue'
+import PasskeyModal from './components/PasskeyModal.vue'
+
+const showModal = ref(false)
+const passkeyModal = ref(null)
+
+function openPasskeyModal() {
+  showModal.value = true
+}
+
+function handleSuccess(credential) {
+  console.log('Authentication successful:', credential)
+}
+
+function handleError(error) {
+  console.error('Authentication failed:', error)
+}
+</script>
+```
+
+### Using the Login Page Component
+
+```vue
+<template>
+  <LoginPage
+    :language="'en'"
+    @login="handleLogin"
+  />
+</template>
+
+<script setup>
+import LoginPage from './components/LoginPage.vue'
+
+function handleLogin(data) {
+  console.log('Login:', data)
+}
+</script>
+```
+
+## 🎨 Component Props
+
+### PasskeyModal Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `show` | Boolean | `false` | Controls modal visibility |
+| `language` | String | `'en'` | Language code (en, zh, ja, es, fr, de, ko, ar) |
+| `rpId` | String | `window.location.hostname` | Relying Party ID |
+| `challenge` | String | `'demo-challenge'` | Challenge for authentication |
+| `timeout` | Number | `60000` | Authentication timeout in ms |
+| `maxRetries` | Number | `3` | Maximum retry attempts |
+| `autoDetectLanguage` | Boolean | `true` | Auto-detect browser language |
+| `closeOnBackdrop` | Boolean | `true` | Close on backdrop click |
+| `closeOnEsc` | Boolean | `true` | Close on ESC key |
+| `closeOnSwipe` | Boolean | `true` | Close on swipe down |
+| `saveLanguage` | Boolean | `true` | Save language preference |
+
+### PasskeyModal Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `close` | - | Emitted when modal closes |
+| `success` | `credentialData` | Emitted on successful authentication |
+| `error` | `Error` | Emitted on authentication error |
+| `timeout` | `Error` | Emitted when authentication times out |
+| `languageChange` | `languageCode` | Emitted when language changes |
+
+## 🔧 Exposed Methods
+
+```javascript
+// Open the modal
+passkeyModal.value.open()
+
+// Close the modal
+passkeyModal.value.close()
 ```
 
 ## 🛠️ Tech Stack
 
-- **Vue 3** - Progressive JavaScript framework (Composition API)
-- **Vite** - Next generation frontend tooling
-- **Tailwind CSS** - Utility-first CSS framework
-- **GSAP** - GreenSock Animation Platform for complex animations
+- **Vue 3**: Modern Vue 3 Composition API
+- **Vite**: Lightning-fast build tool
+- **Tailwind CSS**: Utility-first CSS framework
+- **GSAP**: Professional animation library
+- **WebAuthn API**: Standard passkey authentication
+- **i18n**: Custom multi-language support
 
-## 📁 Project Structure
+## 📱 Browser Support
 
-```
-mascot-login/
-├── src/
-│   ├── components/
-│   │   ├── AbstractInteractiveHero.vue  # Animated characters
-│   │   ├── LanguageSelector.vue          # Language selection
-│   │   └── LoginPage.vue                 # Main login page
-│   ├── utils/
-│   │   └── i18n.js                       # Translations
-│   ├── App.vue                            # Root component
-│   ├── main.js                            # Entry point
-│   └── style.css                          # Global styles
-├── index.html
-├── package.json
-├── vite.config.js
-├── tailwind.config.js
-└── postcss.config.js
-```
-
-## 🎨 Customization
-
-### Changing Colors
-
-Edit `src/components/LoginPage.vue` and `src/components/AbstractInteractiveHero.vue` to customize the color scheme.
-
-### Adding Languages
-
-Add new translations to `src/utils/i18n.js`.
-
-### Character Customization
-
-Modify `src/components/AbstractInteractiveHero.vue` to adjust character animations, timings, and behaviors.
-
-## 📝 License
-
-MIT License - feel free to use this project for personal or commercial purposes!
+- Chrome 67+
+- Edge 79+
+- Firefox 60+
+- Safari 13+
+- Safari on iOS 13.5+
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome!
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 💡 Acknowledgments
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-- Inspired by modern UI/UX design principles
-- Built with love and GSAP ✨
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by GitHub's passkey interface
+- Built with ❤️ and Vue.js
+- Beautiful animations powered by GSAP
 
 ---
 
-Made with ❤️ by you
+<p align="center">
+  Made with ✨ by MascotLogin Team
+</p>

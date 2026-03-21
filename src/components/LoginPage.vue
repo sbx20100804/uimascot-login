@@ -1,5 +1,22 @@
 <template>
-  <div ref="loginPageRef" class="min-h-screen flex">
+  <div ref="loginPageRef" class="min-h-screen flex overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      <div
+        v-for="i in 20"
+        :key="i"
+        class="particle absolute rounded-full"
+        :style="{
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          width: `${Math.random() * 20 + 5}px`,
+          height: `${Math.random() * 20 + 5}px`,
+          background: `rgba(${Math.random() * 100 + 139}, ${Math.random() * 100 + 92}, ${Math.random() * 100 + 246}, ${Math.random() * 0.3 + 0.1})`,
+          animation: `float ${Math.random() * 10 + 10}s linear infinite`,
+          animationDelay: `${Math.random() * 5}s`
+        }"
+      ></div>
+    </div>
+    
     <div class="w-[45%] bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-8 relative z-10 hidden md:flex">
       <div class="w-full max-w-md">
         <AbstractInteractiveHero
@@ -11,15 +28,17 @@
       </div>
     </div>
 
-    <div class="w-full md:w-[55%] flex items-center justify-center p-8 relative z-10">
+    <div class="w-full md:w-[55%] flex items-center justify-center p-8 relative z-10 bg-white">
       <div class="w-full max-w-md">
-        <div class="flex items-center gap-3 mb-10">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center shadow-xl">
-            <span class="text-3xl text-white">✨</span>
-          </div>
-          <div>
-            <span class="text-slate-800 text-2xl font-bold tracking-tight">MascotLogin</span>
-            <p class="text-slate-500 text-sm">{{ t.welcomeBack }}</p>
+        <div class="flex items-center justify-between mb-10">
+          <div class="flex items-center gap-3">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center shadow-xl">
+              <span class="text-3xl text-white">✨</span>
+            </div>
+            <div>
+              <span class="text-slate-800 text-2xl font-bold tracking-tight">MascotLogin</span>
+              <p class="text-slate-500 text-sm">{{ t.welcomeBack }}</p>
+            </div>
           </div>
         </div>
 
@@ -80,15 +99,6 @@
                 {{ showPassword ? '🙈' : '👁️' }}
               </button>
             </div>
-            <div v-if="password" class="space-y-2 mt-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-slate-600">{{ t.passwordStrength }}</span>
-                <span class="text-xs font-bold" :class="passwordStrengthColor">{{ passwordStrengthLabel }}</span>
-              </div>
-              <div class="flex gap-1.5">
-                <div v-for="i in 4" :key="i" class="h-1.5 flex-1 rounded-full transition-all duration-300" :class="getStrengthBarColor(i)"></div>
-              </div>
-            </div>
           </div>
 
           <div class="flex justify-end">
@@ -116,14 +126,14 @@
                   {{ t.signingIn }}
                 </template>
                 <template v-else-if="isSuccess">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                   {{ t.welcome }}
                 </template>
                 <template v-else>
                   {{ t.signInButton }}
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                   </svg>
                 </template>
@@ -198,6 +208,7 @@
       ref="passkeyModalRef"
       :show="showPasskeyModal"
       :language="language"
+      theme="light"
       @close="showPasskeyModal = false"
       @success="handlePasskeySuccess"
       @error="handlePasskeyError"
@@ -273,14 +284,14 @@
                   id="createPasskey"
                   v-model="createPasskey"
                   type="checkbox"
-                  class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 bg-slate-100"
                 />
               </div>
               <div class="ml-3 text-sm">
-                <label for="createPasskey" class="font-medium text-gray-700">
+                <label for="createPasskey" class="font-medium text-slate-700">
                   {{ t.createPasskey }}
                 </label>
-                <p class="text-gray-500 mt-1">
+                <p class="text-slate-500 mt-1">
                   {{ t.passkeyDescription }}
                 </p>
               </div>
@@ -300,7 +311,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import gsap from 'gsap'
 import AbstractInteractiveHero from './AbstractInteractiveHero.vue'
 import PasskeyModal from './PasskeyModal.vue'
@@ -347,46 +358,6 @@ const loginPageRef = ref(null)
 const passkeyModalRef = ref(null)
 
 const t = computed(() => translations[props.language] || translations['en'])
-
-const passwordStrength = computed(() => {
-  const pwd = password.value
-  if (!pwd) return 0
-  let strength = 0
-  if (pwd.length >= 6) strength++
-  if (pwd.length >= 10) strength++
-  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) strength++
-  if (/[0-9]/.test(pwd)) strength++
-  if (/[^A-Za-z0-9]/.test(pwd)) strength++
-  return Math.min(4, strength)
-})
-
-const passwordStrengthLabel = computed(() => {
-  const strength = passwordStrength.value
-  if (strength === 0) return ''
-  if (strength === 1) return t.value.passwordWeak
-  if (strength === 2) return t.value.passwordFair
-  if (strength === 3) return t.value.passwordGood
-  return t.value.passwordStrong
-})
-
-const passwordStrengthColor = computed(() => {
-  const strength = passwordStrength.value
-  if (strength <= 1) return 'text-rose-600'
-  if (strength === 2) return 'text-amber-600'
-  if (strength === 3) return 'text-blue-600'
-  return 'text-emerald-600'
-})
-
-function getStrengthBarColor(index) {
-  const strength = passwordStrength.value
-  if (index <= strength) {
-    if (strength <= 1) return 'bg-rose-500'
-    if (strength === 2) return 'bg-amber-500'
-    if (strength === 3) return 'bg-blue-500'
-    return 'bg-emerald-500'
-  }
-  return 'bg-slate-200'
-}
 
 function handleEmailFocus() {
   focusState.value = 'email'
@@ -583,6 +554,29 @@ onMounted(() => {
 .error-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translateY(-30px) rotate(90deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-15px) rotate(180deg);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translateY(-40px) rotate(270deg);
+    opacity: 0.7;
+  }
+}
+
+.particle {
+  will-change: transform, opacity;
 }
 
 input {

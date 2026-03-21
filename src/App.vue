@@ -1,43 +1,52 @@
 <template>
   <div>
-    <transition name="page">
-      <template v-if="!languageSelected">
-        <LanguageSelector @languageSelected="handleLanguageSelected" />
-      </template>
-      <template v-else>
-        <LoginPage :language="currentLanguage" />
-      </template>
+    <transition name="fade">
+      <div v-if="!showLogin" key="language">
+        <LanguageSelector @language-selected="onLanguageSelected" :saved-language="savedLanguage" />
+      </div>
+      <div v-else key="login">
+        <LoginPage :language="selectedLanguage" />
+      </div>
     </transition>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import LoginPage from './components/LoginPage.vue'
 import LanguageSelector from './components/LanguageSelector.vue'
 
-const languageSelected = ref(false)
-const currentLanguage = ref('en')
+const showLogin = ref(false)
+const selectedLanguage = ref('en')
+const savedLanguage = ref(null)
 
-function handleLanguageSelected(lang) {
-  currentLanguage.value = lang
-  languageSelected.value = true
+function onLanguageSelected(lang) {
+  selectedLanguage.value = lang
+  localStorage.setItem('preferredLanguage', lang)
+  showLogin.value = true
 }
+
+onMounted(() => {
+  const savedLang = localStorage.getItem('preferredLanguage')
+  if (savedLang) {
+    savedLanguage.value = savedLang
+  }
+})
 </script>
 
 <style>
-.page-enter-active,
-.page-leave-active {
-  transition: all 0.4s ease;
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.page-enter-from {
+.fade-enter-from {
   opacity: 0;
-  transform: translateX(-30px);
+  transform: scale(0.95);
 }
 
-.page-leave-to {
+.fade-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: scale(1.05);
 }
 </style>

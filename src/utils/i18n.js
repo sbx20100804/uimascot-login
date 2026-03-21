@@ -68,6 +68,8 @@ export const translations = {
     hidePassword: 'Hide password',
     showPassword: 'Show password',
     selectPreferredLanguage: 'Select your preferred language',
+    remainingTime: 'Remaining time',
+    attempts: 'Attempts',
   },
   zh: {
     selectLanguage: '选择语言',
@@ -138,6 +140,8 @@ export const translations = {
     hidePassword: '隐藏密码',
     showPassword: '显示密码',
     selectPreferredLanguage: '选择您喜欢的语言',
+    remainingTime: '剩余时间',
+    attempts: '尝试次数',
   },
   ja: {
     selectLanguage: '言語を選択',
@@ -208,6 +212,8 @@ export const translations = {
     hidePassword: 'パスワードを非表示',
     showPassword: 'パスワードを表示',
     selectPreferredLanguage: '好みの言語を選択してください',
+    remainingTime: '残り時間',
+    attempts: '試行回数',
   },
   es: {
     selectLanguage: 'Seleccionar idioma',
@@ -278,6 +284,8 @@ export const translations = {
     hidePassword: 'Ocultar contraseña',
     showPassword: 'Mostrar contraseña',
     selectPreferredLanguage: 'Selecciona tu idioma preferido',
+    remainingTime: 'Tiempo restante',
+    attempts: 'Intentos',
   },
   fr: {
     selectLanguage: 'Choisir la langue',
@@ -348,6 +356,8 @@ export const translations = {
     hidePassword: 'Masquer le mot de passe',
     showPassword: 'Afficher le mot de passe',
     selectPreferredLanguage: 'Sélectionnez votre langue préférée',
+    remainingTime: 'Temps restant',
+    attempts: 'Tentatives',
   },
   de: {
     selectLanguage: 'Sprache auswählen',
@@ -418,6 +428,8 @@ export const translations = {
     hidePassword: 'Passwort ausblenden',
     showPassword: 'Passwort anzeigen',
     selectPreferredLanguage: 'Wählen Sie Ihre bevorzugte Sprache',
+    remainingTime: 'Verbleibende Zeit',
+    attempts: 'Versuche',
   },
   ko: {
     selectLanguage: '언어 선택',
@@ -488,6 +500,8 @@ export const translations = {
     hidePassword: '비밀번호 숨기기',
     showPassword: '비밀번호 표시',
     selectPreferredLanguage: '선호하는 언어를 선택하세요',
+    remainingTime: '남은 시간',
+    attempts: '시도 횟수',
   },
   ar: {
     selectLanguage: 'اختر اللغة',
@@ -558,5 +572,7 @@ export const translations = {
     hidePassword: 'إخفاء كلمة المرور',
     showPassword: 'إظهار كلمة المرور',
     selectPreferredLanguage: 'حدد لغتك المفضلة',
+    remainingTime: 'الوقت المتبقي',
+    attempts: 'المحاولات',
   }
 }

@@ -1,186 +1,150 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 z-50 overflow-y-auto">
+  <div v-if="isVisible" class="fixed inset-0 z-[100] overflow-y-auto" :dir="isRTL ? 'rtl' : 'ltr'">
     <div class="flex min-h-screen items-end justify-center px-4 pb-4 pt-4 sm:items-center sm:p-0">
       <div
         ref="backdropRef"
-        class="fixed inset-0 bg-gradient-to-br from-purple-900/60 via-blue-900/50 to-indigo-900/60 backdrop-blur-md dark:from-slate-900/70 dark:via-slate-800/60 dark:to-slate-900/70"
-        @click="close"
+        class="fixed inset-0 overflow-hidden"
+        @click="handleBackdropClick"
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
       >
-        <div ref="deco1" class="deco-circle absolute top-8 left-8 w-48 h-48 rounded-full bg-pink-400/20"></div>
-        <div ref="deco2" class="deco-circle absolute bottom-8 right-8 w-40 h-40 rounded-full bg-blue-400/20"></div>
-        <div ref="deco3" class="deco-circle absolute top-1/3 left-1/5 w-28 h-28 rounded-full bg-yellow-400/20"></div>
+        <div class="absolute inset-0 bg-black/40"></div>
       </div>
 
       <div
         ref="modalRef"
-        class="relative w-full max-w-md overflow-hidden rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl px-8 py-10 text-left shadow-2xl sm:my-8 border border-white/50 dark:border-slate-600/50"
+        class="relative w-full max-w-lg overflow-hidden bg-white text-left shadow-2xl sm:my-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="passkey-modal-title"
+        aria-describedby="passkey-modal-description"
+        @keydown="handleKeydown"
       >
-        <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-200/50 to-blue-200/30 dark:from-purple-500/20 dark:to-blue-500/10 rounded-bl-full -z-10"></div>
-        <div class="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-pink-200/40 to-yellow-200/30 dark:from-pink-500/20 dark:to-yellow-500/10 rounded-tr-full -z-10"></div>
-        
-        <div class="absolute right-5 top-5">
-          <button
-            type="button"
-            @click="close"
-            class="inline-flex items-center justify-center rounded-full p-3 text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover:scale-110"
-            aria-label="Close"
-          >
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div ref="contentRef" class="mt-2">
-          <div v-if="currentStep === 'initial'" class="text-center">
-            <div ref="iconRef" class="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 dark:from-purple-900/50 dark:via-pink-900/50 dark:to-blue-900/50 shadow-lg">
-              <svg class="h-16 w-16 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4" />
+        <div class="px-8 py-6">
+          <div class="flex items-start justify-between">
+            <div ref="iconRef" class="flex h-16 w-16 items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
+              <svg class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
               </svg>
             </div>
-            <h3 id="passkey-modal-title" class="mt-6 text-2xl font-bold bg-gradient-to-r from-purple-700 via-pink-600 to-blue-700 dark:from-purple-400 dark:via-pink-400 dark:to-blue-400 bg-clip-text text-transparent">
-              {{ t.signInWithPasskeyTitle }}
-            </h3>
-            <p class="mt-4 text-base text-gray-600 dark:text-slate-300 leading-relaxed">
-              {{ t.signInWithPasskeyDesc }}
-            </p>
-          </div>
-
-          <div v-else-if="currentStep === 'loading'" class="text-center py-4">
-            <div class="flex items-center justify-center">
-              <div ref="loadingRef" class="relative">
-                <div class="absolute inset-0 rounded-full bg-purple-400/30 dark:bg-purple-500/30 blur-xl animate-pulse"></div>
-                <svg class="relative h-20 w-20 text-purple-600 dark:text-purple-400" viewBox="0 0 24 24" fill="none">
-                  <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="mt-6 space-y-2">
-              <p class="text-base text-gray-700 dark:text-slate-200 font-medium">{{ t.waitingForSecurityKey }}</p>
-              <p class="text-sm text-gray-500 dark:text-slate-400">{{ t.touchYourSecurityKey }}</p>
-            </div>
-          </div>
-
-          <div v-else-if="currentStep === 'qrcode'" class="text-center">
-            <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-700 dark:to-slate-600 shadow-md">
-              <svg class="h-10 w-10 text-gray-600 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </div>
-            <h3 class="mt-5 text-xl font-bold text-gray-800 dark:text-white">
-              {{ t.scanWithYourPhone }}
-            </h3>
-            <p class="mt-3 text-base text-gray-600 dark:text-slate-300">
-              {{ t.useYourPhoneCamera }}
-            </p>
-            
-            <div ref="qrRef" class="mt-8 bg-white dark:bg-slate-700 p-6 rounded-2xl border-2 border-dashed border-purple-200 dark:border-purple-400/30 inline-block shadow-lg">
-              <div class="w-56 h-56 bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50 dark:from-slate-800 dark:via-purple-900/30 dark:to-blue-900/30 rounded-xl flex items-center justify-center">
-                <div class="text-center">
-                  <div class="text-8xl mb-4">📱✨</div>
-                  <div class="text-sm font-medium text-purple-600 dark:text-purple-400">{{ t.qrCode }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div v-else-if="currentStep === 'success'" class="text-center py-4">
-            <div ref="successRef" class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 dark:from-green-900/50 dark:via-emerald-900/50 dark:to-teal-900/50 shadow-lg">
-              <svg class="h-12 w-12 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 class="mt-5 text-xl font-bold text-gray-800 dark:text-white">
-              {{ t.signedInSuccessfully }}
-            </h3>
-            <p class="mt-2 text-base text-gray-500 dark:text-slate-300">
-              {{ t.redirectingYou }}
-            </p>
-            <div class="mt-6 flex justify-center gap-2">
-              <span v-for="i in 3" :key="i" class="w-3 h-3 rounded-full bg-emerald-400" :style="{ animation: `bounce 1.4s ease-in-out infinite ${i * 0.15}s` }"></span>
-            </div>
-          </div>
-
-          <div v-else-if="currentStep === 'error'" class="text-center py-4">
-            <div ref="errorRef" class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-red-100 via-pink-100 to-rose-100 dark:from-red-900/50 dark:via-pink-900/50 dark:to-rose-900/50 shadow-lg">
-              <svg class="h-12 w-12 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <button
+              type="button"
+              @click="close"
+              ref="closeBtnRef"
+              class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 focus:outline-none transition-colors"
+              aria-label="Close"
+              tabindex="0"
+            >
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
-            </div>
-            <h3 class="mt-5 text-xl font-bold text-gray-800 dark:text-white">
-              {{ t.somethingWentWrong }}
-            </h3>
-            <p class="mt-3 text-base text-gray-500 dark:text-slate-300">
-              {{ errorMessage }}
-            </p>
+            </button>
           </div>
 
-          <div class="mt-10 space-y-4">
-            <template v-if="currentStep === 'initial'">
-              <button
-                type="button"
-                @click="startAuthentication"
-                :disabled="isAuthenticating"
-                class="inline-flex w-full items-center justify-center rounded-2xl border border-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 px-6 py-4.5 text-base font-bold text-white shadow-lg hover:shadow-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-xl active:shadow-md"
-              >
-                <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                {{ t.useSecurityKey }}
-              </button>
+          <div ref="contentRef" class="mt-6">
+            <div v-if="currentStep === 'initial'">
+              <h2 id="passkey-modal-title" class="text-2xl font-semibold text-slate-900">
+                {{ t.signInWithPasskeyTitle }}
+              </h2>
+              <p id="passkey-modal-description" class="mt-2 text-slate-600">
+                {{ t.signInWithPasskeyDesc }}
+              </p>
 
-              <button
-                type="button"
-                @click="showQRCode"
-                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-purple-200 dark:border-purple-400/30 bg-white dark:bg-slate-700 px-6 py-4.5 text-base font-bold text-purple-700 dark:text-purple-300 shadow-md hover:bg-purple-50 dark:hover:bg-slate-600 hover:border-purple-300 dark:hover:border-purple-400/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-300 hover:shadow-lg active:shadow-sm"
-              >
-                <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                {{ t.useADifferentDevice }}
-              </button>
-            </template>
+              <div class="mt-6 space-y-3">
+                <button
+                  type="button"
+                  @click="startAuthentication"
+                  ref="primaryBtnRef"
+                  class="w-full flex items-center gap-4 px-4 py-4 border-2 border-slate-200 hover:border-blue-500 bg-transparent hover:bg-blue-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  tabindex="0"
+                  @mouseenter="handleButtonHover('primary')"
+                  @mouseleave="handleButtonLeave"
+                >
+                  <div class="flex h-10 w-10 items-center justify-center bg-slate-100">
+                    <svg class="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+                      <rect x="9" y="9" width="6" height="6"/>
+                    </svg>
+                  </div>
+                  <div class="text-left flex-1">
+                    <div class="font-medium text-slate-900">{{ t.useSecurityKey }}</div>
+                    <div class="text-sm text-slate-500">Windows Hello, fingerprint, or security key</div>
+                  </div>
+                  <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
 
-            <template v-else-if="currentStep === 'qrcode'">
-              <button
-                type="button"
-                @click="goToInitial"
-                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-gray-200 dark:border-slate-500 bg-white dark:bg-slate-700 px-6 py-4.5 text-base font-bold text-gray-700 dark:text-slate-200 shadow-md hover:bg-gray-50 dark:hover:bg-slate-600 hover:border-gray-300 dark:hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 hover:shadow-lg active:shadow-sm"
-              >
-                <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            <div v-else-if="currentStep === 'loading'" class="text-center py-4">
+              <div ref="loadingRef" class="mx-auto flex h-20 w-20 items-center justify-center">
+                <svg class="h-12 w-12 text-blue-500 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                 </svg>
-                {{ t.back }}
-              </button>
-            </template>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold text-slate-900">
+                {{ t.waitingForSecurityKey }}
+              </h3>
+              <p class="mt-2 text-slate-600">
+                {{ t.touchYourSecurityKey }}
+              </p>
+              <div class="mt-4">
+                <button
+                  type="button"
+                  @click="cancelAuthentication"
+                  class="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
+                >
+                  {{ t.cancel }}
+                </button>
+              </div>
+            </div>
 
-            <template v-else-if="currentStep === 'loading'">
-              <button
-                type="button"
-                @click="cancelAuthentication"
-                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-gray-200 dark:border-slate-500 bg-white dark:bg-slate-700 px-6 py-4.5 text-base font-bold text-gray-700 dark:text-slate-200 shadow-md hover:bg-gray-50 dark:hover:bg-slate-600 hover:border-gray-300 dark:hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 hover:shadow-lg active:shadow-sm"
-              >
-                {{ t.cancel }}
-              </button>
-            </template>
-
-            <template v-else-if="currentStep === 'error'">
-              <button
-                type="button"
-                @click="retryAuthentication"
-                class="inline-flex w-full items-center justify-center rounded-2xl border-2 border-rose-200 dark:border-rose-400/30 bg-white dark:bg-slate-700 px-6 py-4.5 text-base font-bold text-rose-700 dark:text-rose-300 shadow-md hover:bg-rose-50 dark:hover:bg-slate-600 hover:border-rose-300 dark:hover:border-rose-400/50 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-300 hover:shadow-lg active:shadow-sm"
-              >
-                <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <div v-else-if="currentStep === 'success'" class="text-center py-4">
+              <div ref="successRef" class="mx-auto flex h-20 w-20 items-center justify-center bg-green-100 rounded-full">
+                <svg class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                {{ retryCount > 0 ? `${t.tryAgain} (${retryCount + 1}/3)` : t.tryAgain }}
-              </button>
-            </template>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold text-slate-900">
+                {{ t.signedInSuccessfully }}
+              </h3>
+              <p class="mt-2 text-slate-600">
+                {{ t.redirectingYou }}
+              </p>
+            </div>
+
+            <div v-else-if="currentStep === 'error'" class="text-center py-4">
+              <div ref="errorRef" class="mx-auto flex h-20 w-20 items-center justify-center bg-red-100 rounded-full">
+                <svg class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold text-slate-900">
+                {{ t.somethingWentWrong }}
+              </h3>
+              <p class="mt-2 text-slate-600">
+                {{ errorMessage }}
+              </p>
+              <div class="mt-6 space-y-3">
+                <button
+                  type="button"
+                  @click="retryAuthentication"
+                  class="w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  {{ t.tryAgain }}
+                </button>
+                <button
+                  type="button"
+                  @click="goToInitial"
+                  class="w-full px-4 py-3 text-slate-600 hover:text-slate-800 transition-colors"
+                >
+                  {{ t.back }}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -189,9 +153,24 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick, computed, onMounted } from 'vue'
+import { ref, watch, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import { translations } from '../utils/i18n.js'
 import gsap from 'gsap'
+
+const STORAGE_KEY = 'passkey-modal-language'
+
+const availableLanguages = [
+  { code: 'en', nativeName: 'English', englishName: 'English' },
+  { code: 'zh', nativeName: '中文', englishName: 'Chinese' },
+  { code: 'ja', nativeName: '日本語', englishName: 'Japanese' },
+  { code: 'es', nativeName: 'Español', englishName: 'Spanish' },
+  { code: 'fr', nativeName: 'Français', englishName: 'French' },
+  { code: 'de', nativeName: 'Deutsch', englishName: 'German' },
+  { code: 'ko', nativeName: '한국어', englishName: 'Korean' },
+  { code: 'ar', nativeName: 'العربية', englishName: 'Arabic' }
+]
+
+const rtlLanguages = ['ar', 'he', 'fa', 'ur']
 
 const props = defineProps({
   show: {
@@ -217,40 +196,179 @@ const props = defineProps({
   maxRetries: {
     type: Number,
     default: 3
+  },
+  autoDetectLanguage: {
+    type: Boolean,
+    default: true
+  },
+
+  closeOnBackdrop: {
+    type: Boolean,
+    default: true
+  },
+  closeOnEsc: {
+    type: Boolean,
+    default: true
+  },
+  closeOnSwipe: {
+    type: Boolean,
+    default: true
+  },
+  saveLanguage: {
+    type: Boolean,
+    default: true
   }
 })
 
-const emit = defineEmits(['close', 'success', 'error', 'timeout'])
+const emit = defineEmits(['close', 'success', 'error', 'timeout', 'languageChange'])
 
-const t = computed(() => translations[props.language] || translations['en'])
+const currentLanguage = ref(props.language)
+const t = computed(() => translations[currentLanguage.value] || translations['en'])
+const isRTL = computed(() => rtlLanguages.includes(currentLanguage.value))
 const isVisible = ref(false)
 const currentStep = ref('initial')
 const isAuthenticating = ref(false)
 const errorMessage = ref('')
 const retryCount = ref(0)
 const authTimer = ref(null)
+const previousActiveElement = ref(null)
+const touchStartY = ref(0)
+const hoveredButton = ref(null)
+
 const backdropRef = ref(null)
 const modalRef = ref(null)
 const contentRef = ref(null)
 const iconRef = ref(null)
-const qrRef = ref(null)
 const loadingRef = ref(null)
 const successRef = ref(null)
 const errorRef = ref(null)
-const deco1 = ref(null)
-const deco2 = ref(null)
-const deco3 = ref(null)
+const primaryBtnRef = ref(null)
+const closeBtnRef = ref(null)
+
+function loadSavedLanguage() {
+  if (props.saveLanguage) {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved && translations[saved]) {
+        currentLanguage.value = saved
+      }
+    } catch (e) {
+      console.warn('Failed to load saved language:', e)
+    }
+  }
+}
+
+function saveLanguageToStorage(lang) {
+  if (props.saveLanguage) {
+    try {
+      localStorage.setItem(STORAGE_KEY, lang)
+    } catch (e) {
+      console.warn('Failed to save language:', e)
+    }
+  }
+}
+
+function detectLanguage() {
+  if (props.autoDetectLanguage && !localStorage.getItem(STORAGE_KEY)) {
+    const browserLang = navigator.language.split('-')[0]
+    if (translations[browserLang]) {
+      currentLanguage.value = browserLang
+    }
+  }
+}
+
+function preventBackgroundScroll(prevent) {
+  if (prevent) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+}
+
+function focusFirstInteractiveElement() {
+  if (primaryBtnRef.value) {
+    primaryBtnRef.value.focus()
+  } else if (closeBtnRef.value) {
+    closeBtnRef.value.focus()
+  }
+}
+
+function restoreFocus() {
+  if (previousActiveElement.value) {
+    previousActiveElement.value.focus()
+  }
+}
+
+function handleKeydown(event) {
+  if (event.key === 'Escape' && props.closeOnEsc) {
+    close()
+  }
+}
+
+function handleBackdropClick(event) {
+  if (props.closeOnBackdrop && event.target === backdropRef.value) {
+    close()
+  }
+}
+
+function handleTouchStart(event) {
+  touchStartY.value = event.touches[0].clientY
+}
+
+function handleTouchEnd(event) {
+  if (!props.closeOnSwipe) return
+  
+  const touchEndY = event.changedTouches[0].clientY
+  const diff = touchStartY.value - touchEndY
+  
+  if (diff > 50) {
+    close()
+  }
+}
+
+function handleButtonHover(buttonId) {
+  hoveredButton.value = buttonId
+  if (buttonId === 'primary' && primaryBtnRef.value) {
+    gsap.to(primaryBtnRef.value, {
+      scale: 1.02,
+      duration: 0.2,
+      ease: 'power2.out'
+    })
+  }
+}
+
+function handleButtonLeave() {
+  hoveredButton.value = null
+  if (primaryBtnRef.value) {
+    gsap.to(primaryBtnRef.value, {
+      scale: 1,
+      duration: 0.2,
+      ease: 'power2.out'
+    })
+  }
+}
 
 watch(() => props.show, async (newVal) => {
   if (newVal) {
+    previousActiveElement.value = document.activeElement
     isVisible.value = true
     currentStep.value = 'initial'
     errorMessage.value = ''
     retryCount.value = 0
+    loadSavedLanguage()
+    detectLanguage()
+    preventBackgroundScroll(true)
     await nextTick()
     openModal()
+    focusFirstInteractiveElement()
   } else {
     closeModal()
+  }
+})
+
+watch(() => props.language, (newVal) => {
+  if (translations[newVal]) {
+    currentLanguage.value = newVal
   }
 })
 
@@ -258,37 +376,27 @@ function openModal() {
   const tl = gsap.timeline()
   
   gsap.set(backdropRef.value, { opacity: 0 })
-  gsap.set(modalRef.value, { opacity: 0, scale: 0.6, y: 50, rotation: -5 })
-  gsap.set([deco1.value, deco2.value, deco3.value], { scale: 0, opacity: 0 })
+  gsap.set(modalRef.value, { opacity: 0, scale: 0.95, y: 20 })
+  gsap.set(iconRef.value, { scale: 0, rotation: -10 })
   
   tl.to(backdropRef.value, {
     opacity: 1,
-    duration: 0.4,
+    duration: 0.2,
     ease: 'power2.out'
   })
-  .to([deco1.value, deco2.value, deco3.value], {
-    scale: 1,
-    opacity: 1,
-    duration: 0.5,
-    stagger: 0.1,
-    ease: 'back.out(1.5)'
-  }, '-=0.2')
   .to(modalRef.value, {
     opacity: 1,
     scale: 1,
     y: 0,
+    duration: 0.25,
+    ease: 'power2.out'
+  }, '-=0.1')
+  .to(iconRef.value, {
+    scale: 1,
     rotation: 0,
-    duration: 0.6,
-    ease: 'elastic.out(1, 0.6)'
-  }, '-=0.3')
-  
-  if (iconRef.value) {
-    tl.to(iconRef.value, {
-      scale: [1, 1.1, 1],
-      duration: 0.6,
-      ease: 'back.out(1.4)'
-    }, '-=0.2')
-  }
+    duration: 0.4,
+    ease: 'back.out(1.5)'
+  }, '-=0.15')
 }
 
 function closeModal() {
@@ -296,26 +404,21 @@ function closeModal() {
   
   tl.to(modalRef.value, {
     opacity: 0,
-    scale: 0.7,
-    y: 30,
-    duration: 0.35,
-    ease: 'back.in(1.3)'
-  })
-  .to([deco1.value, deco2.value, deco3.value], {
-    scale: 0,
-    opacity: 0,
-    duration: 0.25,
-    stagger: -0.05,
+    scale: 0.95,
+    y: 20,
+    duration: 0.2,
     ease: 'power2.in'
-  }, '-=0.15')
+  })
   .to(backdropRef.value, {
     opacity: 0,
-    duration: 0.3,
+    duration: 0.15,
     ease: 'power2.in'
-  }, '-=0.15')
+  }, '-=0.1')
   .call(() => {
     isVisible.value = false
+    preventBackgroundScroll(false)
     clearAuthTimer()
+    restoreFocus()
   })
 }
 
@@ -323,7 +426,7 @@ function close() {
   closeModal()
   setTimeout(() => {
     emit('close')
-  }, 400)
+  }, 300)
 }
 
 function changeStep(newStep) {
@@ -331,56 +434,44 @@ function changeStep(newStep) {
   
   tl.to(contentRef.value, {
     opacity: 0,
-    y: -20,
-    scale: 0.95,
-    duration: 0.2,
+    y: -10,
+    duration: 0.15,
     ease: 'power2.in'
   })
   .call(() => {
     currentStep.value = newStep
   })
-  .set(contentRef.value, { y: 20, scale: 0.95 })
+  .set(contentRef.value, { y: 10 })
   .to(contentRef.value, {
     opacity: 1,
     y: 0,
-    scale: 1,
-    duration: 0.3,
-    ease: 'back.out(1.4)'
+    duration: 0.2,
+    ease: 'power2.out'
   })
   
   nextTick(() => {
     if (newStep === 'success' && successRef.value) {
       gsap.fromTo(successRef.value, 
         { scale: 0, rotation: -180 },
-        { scale: 1, rotation: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' }
+        { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.5)' }
       )
     } else if (newStep === 'error' && errorRef.value) {
       gsap.fromTo(errorRef.value,
         { x: -20, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.4, ease: 'back.out(1.4)' }
-      )
-      gsap.to(errorRef.value, {
-        x: [0, -5, 5, -5, 5, 0],
-        duration: 0.5,
-        delay: 0.2,
-        ease: 'power2.inOut'
-      })
-    } else if (newStep === 'qrcode' && qrRef.value) {
-      gsap.fromTo(qrRef.value,
-        { scale: 0.5, rotation: 10 },
-        { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.5)' }
+        { x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
       )
     } else if (newStep === 'loading' && loadingRef.value) {
       gsap.fromTo(loadingRef.value,
-        { scale: 0 },
-        { scale: 1, duration: 0.4, ease: 'back.out(1.4)' }
+        { scale: 0.5, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.5)' }
       )
-      gsap.to(loadingRef.value, {
-        rotation: 360,
-        duration: 2,
-        repeat: -1,
-        ease: 'none'
-      })
+    }
+    
+    if (modalRef.value) {
+      const firstBtn = modalRef.value.querySelector('button, [tabindex]:not([tabindex="-1"])')
+      if (firstBtn) {
+        firstBtn.focus()
+      }
     }
   })
 }
@@ -390,10 +481,6 @@ function goToInitial() {
   errorMessage.value = ''
   retryCount.value = 0
   clearAuthTimer()
-}
-
-function showQRCode() {
-  changeStep('qrcode')
 }
 
 function base64UrlToUint8Array(base64UrlString) {
@@ -512,6 +599,17 @@ function cancelAuthentication() {
   goToInitial()
 }
 
+onMounted(() => {
+  loadSavedLanguage()
+  detectLanguage()
+})
+
+onUnmounted(() => {
+  preventBackgroundScroll(false)
+  clearAuthTimer()
+  gsap.killTweensOf('*')
+})
+
 defineExpose({
   open: () => {
     isVisible.value = true
@@ -519,6 +617,7 @@ defineExpose({
     retryCount.value = 0
     nextTick().then(() => {
       openModal()
+      focusFirstInteractiveElement()
     })
   },
   close: close
@@ -526,16 +625,7 @@ defineExpose({
 </script>
 
 <style scoped>
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1);
-  }
-}
-
-.deco-circle {
-  pointer-events: none;
+button {
+  will-change: transform;
 }
 </style>
