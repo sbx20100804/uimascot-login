@@ -1,12 +1,8 @@
 <template>
   <div>
-    <transition name="fade">
-      <div v-if="!showLogin" key="language">
-        <LanguageSelector @language-selected="onLanguageSelected" :saved-language="savedLanguage" />
-      </div>
-      <div v-else key="login">
-        <LoginPage :language="selectedLanguage" />
-      </div>
+    <transition name="fade" mode="out-in">
+      <LanguageSelector v-if="!showLogin" key="language" @language-selected="onLanguageSelected" :saved-language="savedLanguage" />
+      <LoginPage v-else key="login" :language="selectedLanguage" />
     </transition>
   </div>
 </template>
@@ -37,16 +33,16 @@ onMounted(() => {
 <style>
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fade-enter-from {
   opacity: 0;
-  transform: scale(0.95);
+  transform: translateY(20px);
 }
 
 .fade-leave-to {
   opacity: 0;
-  transform: scale(1.05);
+  transform: translateY(-20px);
 }
 </style>

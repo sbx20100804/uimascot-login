@@ -3,17 +3,16 @@
     <div class="flex min-h-screen items-end justify-center px-4 pb-4 pt-4 sm:items-center sm:p-0">
       <div
         ref="backdropRef"
-        class="fixed inset-0 overflow-hidden"
+        class="fixed inset-0 overflow-hidden bg-black/40"
         @click="handleBackdropClick"
         @touchstart="handleTouchStart"
         @touchend="handleTouchEnd"
       >
-        <div class="absolute inset-0 bg-black/40"></div>
       </div>
 
       <div
         ref="modalRef"
-        class="relative w-full max-w-lg overflow-hidden bg-white text-left shadow-2xl sm:my-8"
+        class="relative w-full max-w-lg overflow-hidden bg-white text-left shadow-2xl sm:my-8 rounded-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="passkey-modal-title"
@@ -22,7 +21,7 @@
       >
         <div class="px-8 py-6">
           <div class="flex items-start justify-between">
-            <div ref="iconRef" class="flex h-16 w-16 items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
+            <div ref="iconRef" class="flex h-16 w-16 items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl">
               <svg class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 <path d="m9 12 2 2 4-4"/>
@@ -56,12 +55,12 @@
                   type="button"
                   @click="startAuthentication"
                   ref="primaryBtnRef"
-                  class="w-full flex items-center gap-4 px-4 py-4 border-2 border-slate-200 hover:border-blue-500 bg-transparent hover:bg-blue-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  class="w-full flex items-center gap-4 px-4 py-4 border-2 border-slate-200 hover:border-blue-500 bg-transparent hover:bg-blue-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xl"
                   tabindex="0"
                   @mouseenter="handleButtonHover('primary')"
                   @mouseleave="handleButtonLeave"
                 >
-                  <div class="flex h-10 w-10 items-center justify-center bg-slate-100">
+                  <div class="flex h-10 w-10 items-center justify-center bg-slate-100 rounded-lg">
                     <svg class="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
                       <rect x="9" y="9" width="6" height="6"/>
@@ -69,7 +68,7 @@
                   </div>
                   <div class="text-left flex-1">
                     <div class="font-medium text-slate-900">{{ t.useSecurityKey }}</div>
-                    <div class="text-sm text-slate-500">Windows Hello, fingerprint, or security key</div>
+                    <div class="text-sm text-slate-500">{{ t.securityKeyDesc }}</div>
                   </div>
                   <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
@@ -132,7 +131,7 @@
                 <button
                   type="button"
                   @click="retryAuthentication"
-                  class="w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  class="w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xl"
                 >
                   {{ t.tryAgain }}
                 </button>
@@ -305,8 +304,8 @@ function handleKeydown(event) {
   }
 }
 
-function handleBackdropClick(event) {
-  if (props.closeOnBackdrop && event.target === backdropRef.value) {
+function handleBackdropClick() {
+  if (props.closeOnBackdrop) {
     close()
   }
 }
@@ -607,7 +606,6 @@ onMounted(() => {
 onUnmounted(() => {
   preventBackgroundScroll(false)
   clearAuthTimer()
-  gsap.killTweensOf('*')
 })
 
 defineExpose({

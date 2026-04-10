@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex flex-col items-center justify-center gap-10 py-8">
+  <div ref="containerRef" class="relative flex flex-col items-center justify-center gap-10 py-8">
     <div ref="circleRef" class="character">
       <div class="face circle-face">
         <div class="eyes">
@@ -10,12 +10,13 @@
             <div ref="circleRightPupil" class="pupil"></div>
           </div>
         </div>
+        <div ref="circleMouth" class="mouth circle-mouth"></div>
         <div ref="circleLid" class="lid circle-lid"></div>
       </div>
     </div>
 
     <div ref="squareRef" class="character">
-      <div ref="squareFace" class="face square-face">
+      <div class="face square-face">
         <div class="eyes">
           <div class="eye">
             <div ref="squareLeftPupil" class="pupil"></div>
@@ -24,6 +25,7 @@
             <div ref="squareRightPupil" class="pupil"></div>
           </div>
         </div>
+        <div ref="squareMouth" class="mouth square-mouth"></div>
         <div ref="squareLid" class="lid square-lid"></div>
       </div>
     </div>
@@ -38,6 +40,7 @@
             <div ref="capsuleRightPupil" class="pupil"></div>
           </div>
         </div>
+        <div ref="capsuleMouth" class="mouth capsule-mouth"></div>
         <div ref="capsuleLid" class="lid capsule-lid"></div>
       </div>
     </div>
@@ -54,6 +57,7 @@ const props = defineProps({
   isButtonHovered: { type: Boolean, default: false },
 })
 
+const containerRef = ref(null)
 const circleRef = ref(null)
 const squareRef = ref(null)
 const capsuleRef = ref(null)
@@ -69,142 +73,170 @@ const circleLid = ref(null)
 const squareLid = ref(null)
 const capsuleLid = ref(null)
 
+const circleMouth = ref(null)
+const squareMouth = ref(null)
+const capsuleMouth = ref(null)
+
 let currentState = 'idle'
 let blinkTimer = null
-let mainTimeline = null
+let idleTweens = []
+let startTimeline = null
 
-function killAllAnimations() {
-  if (mainTimeline) {
-    mainTimeline.kill()
-    mainTimeline = null
+const chars = () => [circleRef.value, squareRef.value, capsuleRef.value].filter(Boolean)
+const pupils = () => [circleLeftPupil.value, circleRightPupil.value, squareLeftPupil.value, squareRightPupil.value, capsuleLeftPupil.value, capsuleRightPupil.value].filter(Boolean)
+const lids = () => [circleLid.value, squareLid.value, capsuleLid.value].filter(Boolean)
+const mouths = () => [circleMouth.value, squareMouth.value, capsuleMouth.value].filter(Boolean)
+
+const LID_OPEN_Y = -60
+const LID_CLOSED_Y = 0
+
+function killIdleAndStateAnimations() {
+  idleTweens.forEach(t => t.kill())
+  idleTweens = []
+  if (startTimeline) {
+    startTimeline.kill()
+    startTimeline = null
   }
-  gsap.killTweensOf([
-    circleRef.value, squareRef.value, capsuleRef.value,
-    circleLeftPupil.value, circleRightPupil.value,
-    squareLeftPupil.value, squareRightPupil.value,
-    capsuleLeftPupil.value, capsuleRightPupil.value,
-    circleLid.value, squareLid.value, capsuleLid.value
-  ])
+  gsap.killTweensOf(chars())
+  gsap.killTweensOf(lids())
+  gsap.killTweensOf(mouths())
+}
+
+function startIdle() {
+  idleTweens.forEach(t => t.kill())
+  idleTweens = []
+  idleTweens.push(
+    gsap.to(circleRef.value, { y: -6, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1 }),
+    gsap.to(squareRef.value, { y: -5, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.3 }),
+    gsap.to(capsuleRef.value, { y: -4, duration: 2.5, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.6 })
+  )
 }
 
 function handleMouseMove(e) {
   if (currentState === 'password') return
+  if (!containerRef.value) return
 
-  const cx = window.innerWidth / 2
-  const cy = window.innerHeight / 2
-  const dx = (e.clientX - cx) / cx
-  const dy = (e.clientY - cy) / cy
+  const rect = containerRef.value.getBoundingClientRect()
+  const cx = rect.left + rect.width / 2
+  const cy = rect.top + rect.height / 2
+  const dx = (e.clientX - cx) / (window.innerWidth / 2)
+  const dy = (e.clientY - cy) / (window.innerHeight / 2)
 
-  const cX = dx * 8
-  const cY = dy * 8
-  const sX = dx * 6
-  const sY = dy * 6
-  const capX = dx * 4
-  const capY = dy * 4
+  const maxOffset = currentState === 'email' ? 3 : 6
+  const cX = dx * maxOffset
+  const cY = dy * maxOffset
+  const sX = dx * (maxOffset - 1)
+  const sY = dy * (maxOffset - 1)
+  const capX = dx * (maxOffset - 2)
+  const capY = dy * (maxOffset - 2)
 
-  gsap.to([circleLeftPupil.value, circleRightPupil.value], { x: cX, y: cY, duration: 0.15, ease: 'power1.out' })
-  gsap.to([squareLeftPupil.value, squareRightPupil.value], { x: sX, y: sY, duration: 0.15, ease: 'power1.out' })
-  gsap.to([capsuleLeftPupil.value, capsuleRightPupil.value], { x: capX, y: capY, duration: 0.15, ease: 'power1.out' })
+  gsap.to([circleLeftPupil.value, circleRightPupil.value], { x: cX, y: cY, duration: 0.25, ease: 'power1.out', overwrite: true })
+  gsap.to([squareLeftPupil.value, squareRightPupil.value], { x: sX, y: sY, duration: 0.25, ease: 'power1.out', overwrite: true })
+  gsap.to([capsuleLeftPupil.value, capsuleRightPupil.value], { x: capX, y: capY, duration: 0.25, ease: 'power1.out', overwrite: true })
 }
 
 function blink() {
   if (currentState === 'password') return
-
   const tl = gsap.timeline()
-  tl.to([circleLid.value, squareLid.value, capsuleLid.value], { y: 0, duration: 0.08, ease: 'power2.in' })
-    .to(circleLid.value, { y: -60, duration: 0.1, ease: 'power2.out', delay: 0.06 })
-    .to(squareLid.value, { y: -55, duration: 0.1, ease: 'power2.out' }, '-=0.1')
-    .to(capsuleLid.value, { y: -45, duration: 0.1, ease: 'power2.out' }, '-=0.1')
+  tl.to(lids(), { y: LID_CLOSED_Y, duration: 0.08, ease: 'power2.in' })
+  tl.to(lids(), { y: LID_OPEN_Y, duration: 0.12, ease: 'power2.out', delay: 0.06 })
 }
 
 function scheduleBlink() {
   if (blinkTimer) clearTimeout(blinkTimer)
-  
-  const delay = Math.random() * 3000 + 2000
   blinkTimer = setTimeout(() => {
     if (currentState !== 'password') blink()
     scheduleBlink()
-  }, delay)
+  }, Math.random() * 3000 + 2000)
 }
 
 function playStart() {
-  killAllAnimations()
-  
-  gsap.set([circleRef.value, squareRef.value, capsuleRef.value], { y: 100, opacity: 0, scale: 0.5 })
-  gsap.set([circleLeftPupil.value, circleRightPupil.value, squareLeftPupil.value, squareRightPupil.value, capsuleLeftPupil.value, capsuleRightPupil.value], { scale: 0 })
-  gsap.set(circleLid.value, { y: -60 })
-  gsap.set(squareLid.value, { y: -55 })
-  gsap.set(capsuleLid.value, { y: -45 })
+  killIdleAndStateAnimations()
 
-  mainTimeline = gsap.timeline()
-  mainTimeline.to([circleRef.value, squareRef.value, capsuleRef.value], { opacity: 1, duration: 0.6, ease: 'power2.out' })
-    .to([circleRef.value, squareRef.value, capsuleRef.value], { y: 0, scale: 1, duration: 1, stagger: 0.15, ease: 'back.out(1.5)' }, '-=0.3')
-    .to([circleLeftPupil.value, circleRightPupil.value, squareLeftPupil.value, squareRightPupil.value, capsuleLeftPupil.value, capsuleRightPupil.value], { scale: 1, duration: 0.3, ease: 'back.out(2.5)', stagger: 0.08 }, '-=0.4')
-}
+  gsap.set(chars(), { y: 80, opacity: 0, scale: 0.5 })
+  gsap.set(pupils(), { scale: 1 })
+  gsap.set(mouths(), { scaleX: 0, scaleY: 0 })
+  gsap.set(lids(), { y: LID_CLOSED_Y })
 
-function startIdle() {
-  gsap.to(circleRef.value, { y: -6, duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1 })
-  gsap.to(squareRef.value, { y: -5, duration: 2.8, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.3 })
-  gsap.to(capsuleRef.value, { y: -4, duration: 2.5, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 0.6 })
+  startTimeline = gsap.timeline({
+    onComplete: () => {
+      startTimeline = null
+      if (currentState === 'idle') {
+        startIdle()
+        scheduleBlink()
+      }
+    }
+  })
+
+  startTimeline
+    .to(chars(), { opacity: 1, duration: 0.5, ease: 'power2.out' })
+    .to(chars(), { y: 0, scale: 1, duration: 0.8, stagger: 0.12, ease: 'back.out(1.5)' }, '-=0.2')
+    .to(lids(), { y: LID_OPEN_Y, duration: 0.3, ease: 'back.out(1.5)', stagger: 0.05 }, '-=0.2')
+    .to(mouths(), { scaleX: 0.7, scaleY: 0.6, duration: 0.3, ease: 'back.out(1)' }, '-=0.2')
 }
 
 function toEmail() {
-  killAllAnimations()
+  killIdleAndStateAnimations()
   currentState = 'email'
-  
-  mainTimeline = gsap.timeline()
-  mainTimeline.to([circleRef.value, squareRef.value, capsuleRef.value], { x: 12, rotation: 1.5, y: 0, duration: 0.35, ease: 'power2.out' })
-    .to([circleLeftPupil.value, circleRightPupil.value, squareLeftPupil.value, squareRightPupil.value], { x: 1.5, y: 0, duration: 0.3, ease: 'power2.out' }, '-=0.2')
+
+  const tl = gsap.timeline()
+  tl.to(chars(), { x: 10, rotation: 1.5, y: 0, duration: 0.35, ease: 'power2.out' })
+  tl.to(lids(), { y: LID_OPEN_Y, duration: 0.3, ease: 'back.out(1.5)' }, '-=0.2')
+  tl.to(mouths(), { scaleX: 0.7, scaleY: 0.6, duration: 0.3, ease: 'power2.out' }, '-=0.2')
 }
 
 function toPassword() {
-  killAllAnimations()
+  killIdleAndStateAnimations()
   currentState = 'password'
-  
-  mainTimeline = gsap.timeline()
-  mainTimeline.to([circleRef.value, squareRef.value, capsuleRef.value], { x: 0, rotation: 0, y: 0, duration: 0.3, ease: 'power2.out' })
-    .to(circleLid.value, { y: 0, duration: 0.2 }, '-=0.1')
-    .to(squareLid.value, { y: 0, duration: 0.2 }, '-=0.15')
-    .to(capsuleLid.value, { y: 0, duration: 0.2 }, '-=0.15')
+
+  gsap.set(pupils(), { x: 0, y: 0 })
+
+  const tl = gsap.timeline()
+  tl.to(chars(), { x: 0, rotation: 0, y: 0, duration: 0.3, ease: 'power2.out' })
+  tl.to(lids(), { y: LID_CLOSED_Y, duration: 0.2, ease: 'power2.in' }, '-=0.1')
+  tl.to(mouths(), { scaleX: 0.3, scaleY: 0.2, duration: 0.25, ease: 'power2.out' }, '-=0.15')
 }
 
 function toIdle() {
-  killAllAnimations()
+  killIdleAndStateAnimations()
   currentState = 'idle'
-  
-  mainTimeline = gsap.timeline()
-  mainTimeline.to([circleRef.value, squareRef.value, capsuleRef.value], { x: 0, rotation: 0, y: 0, duration: 0.35, ease: 'power2.out' })
-    .to(circleLid.value, { y: -60, duration: 0.3, ease: 'back.out(1.5)' }, '-=0.1')
-    .to([circleLeftPupil.value, circleRightPupil.value], { y: 0, x: 0, duration: 0.35 }, '-=0.2')
-    .to(squareLid.value, { y: -55, duration: 0.3, ease: 'back.out(1.5)' }, '-=0.25')
-    .to([squareLeftPupil.value, squareRightPupil.value], { y: 0, x: 0, duration: 0.35 }, '-=0.2')
-    .to(capsuleLid.value, { y: -45, duration: 0.3, ease: 'back.out(1.5)' }, '-=0.25')
-  
-  setTimeout(() => {
-    if (currentState === 'idle') {
-      startIdle()
-    }
-  }, 400)
+
+  const tl = gsap.timeline()
+  tl.to(chars(), { x: 0, rotation: 0, y: 0, duration: 0.35, ease: 'power2.out' })
+  tl.to(lids(), { y: LID_OPEN_Y, duration: 0.3, ease: 'back.out(1.5)' }, '-=0.1')
+  tl.to(mouths(), { scaleX: 0.7, scaleY: 0.6, duration: 0.3, ease: 'power2.out' }, '-=0.2')
+  tl.to(pupils(), { x: 0, y: 0, duration: 0.35, ease: 'power2.out' }, 0)
+  tl.add(() => {
+    if (currentState === 'idle') startIdle()
+  })
 }
 
 function onHover() {
   if (currentState === 'password') return
-  
-  const yOff = currentState === 'email' ? -12 : -8
-  gsap.to([circleRef.value, squareRef.value, capsuleRef.value], { y: yOff, duration: 0.35, ease: 'power2.out' })
+  idleTweens.forEach(t => t.kill())
+  idleTweens = []
+
+  const tl = gsap.timeline()
+  tl.to(chars(), { y: -10, duration: 0.3, ease: 'power2.out' })
+  tl.to(mouths(), { scaleX: 1, scaleY: 1, duration: 0.3, ease: 'power2.out' }, '-=0.15')
 }
 
 function onLeave() {
   if (currentState === 'password') return
-  
-  const yOff = currentState === 'email' ? -6 : 0
-  gsap.to([circleRef.value, squareRef.value, capsuleRef.value], { y: yOff, duration: 0.3, ease: 'power2.out' })
+
+  const tl = gsap.timeline()
+  tl.to(chars(), { y: 0, duration: 0.3, ease: 'power2.out' })
+  tl.to(mouths(), { scaleX: 0.7, scaleY: 0.6, duration: 0.3, ease: 'power2.out' }, '-=0.15')
+  tl.add(() => {
+    if (currentState === 'idle') startIdle()
+  })
 }
 
 function shake() {
-  killAllAnimations()
-  
-  gsap.to([circleRef.value, squareRef.value, capsuleRef.value], {
+  killIdleAndStateAnimations()
+  currentState = 'error'
+
+  gsap.to(chars(), {
     keyframes: [
       { x: -12, duration: 0.07, rotation: -6 },
       { x: 12, duration: 0.07, rotation: 6 },
@@ -214,27 +246,29 @@ function shake() {
     ],
     ease: 'power2.inOut',
   })
+
+  gsap.to(mouths(), { scaleX: 1.2, scaleY: 0.8, duration: 0.1, onComplete: () => {
+    gsap.to(mouths(), { scaleX: 0.7, scaleY: 0.6, duration: 0.3, ease: 'back.out(1)', delay: 0.3 })
+  }})
+
+  setTimeout(() => {
+    currentState = 'idle'
+    startIdle()
+  }, 500)
 }
 
 watch(() => props.focusState, async (newS, oldS) => {
   await nextTick()
-  
   if (props.loginStatus === 'error') return
-  
-  if (newS === 'email') {
-    toEmail()
-  } else if (newS === 'password') {
-    toPassword()
-  } else if (newS === 'none' && oldS !== 'none') {
-    toIdle()
-  }
+
+  if (newS === 'email') toEmail()
+  else if (newS === 'password') toPassword()
+  else if (newS === 'none' && oldS !== 'none') toIdle()
 })
 
 watch(() => props.loginStatus, async (s) => {
   await nextTick()
-  if (s === 'error') {
-    shake()
-  }
+  if (s === 'error') shake()
 })
 
 watch(() => props.isButtonHovered, async (h) => {
@@ -245,18 +279,12 @@ watch(() => props.isButtonHovered, async (h) => {
 onMounted(() => {
   document.addEventListener('mousemove', handleMouseMove)
   playStart()
-  setTimeout(() => {
-    if (currentState === 'idle') {
-      startIdle()
-      scheduleBlink()
-    }
-  }, 1200)
 })
 
 onUnmounted(() => {
   document.removeEventListener('mousemove', handleMouseMove)
   if (blinkTimer) clearTimeout(blinkTimer)
-  killAllAnimations()
+  killIdleAndStateAnimations()
 })
 </script>
 
@@ -285,7 +313,6 @@ onUnmounted(() => {
   height: 9.5rem;
   background: #FEE2E2;
   border-radius: 1.4rem;
-  backface-visibility: hidden;
   box-shadow: 12px 12px 24px rgba(248, 113, 113, 0.23), -12px -12px 24px rgba(255, 255, 255, 0.82), inset 3.5px 3.5px 7px rgba(248, 113, 113, 0.14), inset -3.5px -3.5px 7px rgba(255, 255, 255, 0.58);
 }
 
@@ -322,6 +349,31 @@ onUnmounted(() => {
   position: absolute;
   top: 4.5px;
   left: 4.5px;
+}
+
+.mouth {
+  position: absolute;
+  z-index: 10;
+  border-radius: 9999px;
+  background: rgba(30, 41, 59, 0.15);
+}
+
+.circle-mouth {
+  width: 20px;
+  height: 10px;
+  bottom: 28%;
+}
+
+.square-mouth {
+  width: 18px;
+  height: 9px;
+  bottom: 24%;
+}
+
+.capsule-mouth {
+  width: 16px;
+  height: 8px;
+  bottom: 22%;
 }
 
 .lid {
