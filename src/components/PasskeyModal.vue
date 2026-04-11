@@ -12,17 +12,17 @@
 
       <div
         ref="modalRef"
-        class="relative w-full max-w-lg overflow-hidden bg-white text-left shadow-2xl sm:my-8 rounded-2xl"
+        class="glass-card relative w-full max-w-lg overflow-hidden text-left shadow-apple-xl sm:my-8 rounded-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="passkey-modal-title"
         aria-describedby="passkey-modal-description"
         @keydown="handleKeydown"
       >
-        <div class="px-8 py-6">
+        <div class="px-6 py-5 sm:px-8 sm:py-6">
           <div class="flex items-start justify-between">
-            <div ref="iconRef" class="flex h-16 w-16 items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl">
-              <svg class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div ref="iconRef" class="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl">
+              <svg class="h-7 w-7 sm:h-8 sm:w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 <path d="m9 12 2 2 4-4"/>
               </svg>
@@ -31,11 +31,11 @@
               type="button"
               @click="close"
               ref="closeBtnRef"
-              class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 focus:outline-none transition-colors"
+              class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-slate-600 dark:hover:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-lg focus:outline-none transition-colors"
               aria-label="Close"
               tabindex="0"
             >
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -43,10 +43,10 @@
 
           <div ref="contentRef" class="mt-6">
             <div v-if="currentStep === 'initial'">
-              <h2 id="passkey-modal-title" class="text-2xl font-semibold text-slate-900">
+              <h2 id="passkey-modal-title" class="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white">
                 {{ t.signInWithPasskeyTitle }}
               </h2>
-              <p id="passkey-modal-description" class="mt-2 text-slate-600">
+              <p id="passkey-modal-description" class="mt-2 text-slate-600 dark:text-neutral-400">
                 {{ t.signInWithPasskeyDesc }}
               </p>
 
@@ -55,22 +55,22 @@
                   type="button"
                   @click="startAuthentication"
                   ref="primaryBtnRef"
-                  class="w-full flex items-center gap-4 px-4 py-4 border-2 border-slate-200 hover:border-blue-500 bg-transparent hover:bg-blue-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xl"
+                  class="w-full flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 sm:py-4 border-2 border-slate-200 dark:border-neutral-600 hover:border-brand-500 dark:hover:border-brand-500 bg-transparent hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded-xl"
                   tabindex="0"
                   @mouseenter="handleButtonHover('primary')"
                   @mouseleave="handleButtonLeave"
                 >
-                  <div class="flex h-10 w-10 items-center justify-center bg-slate-100 rounded-lg">
-                    <svg class="h-5 w-5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <div class="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center bg-slate-100 dark:bg-neutral-700 rounded-lg">
+                    <svg class="h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
                       <rect x="9" y="9" width="6" height="6"/>
                     </svg>
                   </div>
                   <div class="text-left flex-1">
-                    <div class="font-medium text-slate-900">{{ t.useSecurityKey }}</div>
-                    <div class="text-sm text-slate-500">{{ t.securityKeyDesc }}</div>
+                    <div class="font-medium text-slate-900 dark:text-white text-sm sm:text-base">{{ t.useSecurityKey }}</div>
+                    <div class="text-xs sm:text-sm text-slate-500 dark:text-neutral-400">{{ t.securityKeyDesc }}</div>
                   </div>
-                  <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <svg class="h-4 w-4 sm:h-5 sm:w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                   </svg>
                 </button>
@@ -78,23 +78,23 @@
             </div>
 
             <div v-else-if="currentStep === 'loading'" class="text-center py-4">
-              <div ref="loadingRef" class="mx-auto flex h-20 w-20 items-center justify-center">
-                <svg class="h-12 w-12 text-blue-500 animate-spin" viewBox="0 0 24 24" fill="none">
+              <div ref="loadingRef" class="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center">
+                <svg class="h-10 w-10 sm:h-12 sm:w-12 text-brand-500 animate-spin" viewBox="0 0 24 24" fill="none">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                 </svg>
               </div>
-              <h3 class="mt-6 text-xl font-semibold text-slate-900">
+              <h3 class="mt-5 sm:mt-6 text-lg sm:text-xl font-semibold text-slate-900 dark:text-white">
                 {{ t.waitingForSecurityKey }}
               </h3>
-              <p class="mt-2 text-slate-600">
+              <p class="mt-2 text-slate-600 dark:text-neutral-400 text-sm sm:text-base">
                 {{ t.touchYourSecurityKey }}
               </p>
               <div class="mt-4">
                 <button
                   type="button"
                   @click="cancelAuthentication"
-                  class="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
+                  class="px-4 py-2 text-slate-600 dark:text-neutral-300 hover:text-slate-800 dark:hover:text-white transition-colors text-sm"
                 >
                   {{ t.cancel }}
                 </button>
@@ -102,43 +102,43 @@
             </div>
 
             <div v-else-if="currentStep === 'success'" class="text-center py-4">
-              <div ref="successRef" class="mx-auto flex h-20 w-20 items-center justify-center bg-green-100 rounded-full">
-                <svg class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+              <div ref="successRef" class="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-full">
+                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 class="mt-6 text-xl font-semibold text-slate-900">
+              <h3 class="mt-5 sm:mt-6 text-lg sm:text-xl font-semibold text-slate-900 dark:text-white">
                 {{ t.signedInSuccessfully }}
               </h3>
-              <p class="mt-2 text-slate-600">
+              <p class="mt-2 text-slate-600 dark:text-neutral-400 text-sm sm:text-base">
                 {{ t.redirectingYou }}
               </p>
             </div>
 
             <div v-else-if="currentStep === 'error'" class="text-center py-4">
-              <div ref="errorRef" class="mx-auto flex h-20 w-20 items-center justify-center bg-red-100 rounded-full">
-                <svg class="h-10 w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+              <div ref="errorRef" class="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center bg-red-100 dark:bg-red-900/30 rounded-full">
+                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
-              <h3 class="mt-6 text-xl font-semibold text-slate-900">
+              <h3 class="mt-5 sm:mt-6 text-lg sm:text-xl font-semibold text-slate-900 dark:text-white">
                 {{ t.somethingWentWrong }}
               </h3>
-              <p class="mt-2 text-slate-600">
+              <p class="mt-2 text-slate-600 dark:text-neutral-400 text-sm sm:text-base">
                 {{ errorMessage }}
               </p>
-              <div class="mt-6 space-y-3">
+              <div class="mt-5 sm:mt-6 space-y-3">
                 <button
                   type="button"
                   @click="retryAuthentication"
-                  class="w-full px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-xl"
+                  class="w-full px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded-xl text-sm sm:text-base"
                 >
                   {{ t.tryAgain }}
                 </button>
                 <button
                   type="button"
                   @click="goToInitial"
-                  class="w-full px-4 py-3 text-slate-600 hover:text-slate-800 transition-colors"
+                  class="w-full px-4 py-3 text-slate-600 dark:text-neutral-300 hover:text-slate-800 dark:hover:text-white transition-colors text-sm sm:text-base"
                 >
                   {{ t.back }}
                 </button>

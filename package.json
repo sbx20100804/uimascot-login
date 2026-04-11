@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "A beautiful interactive login page with animated mascot characters",
+  "description": "MascotLogin - A modern, responsive login interface with animated mascot characters, multi-device adaptation, dark mode, captcha verification, and multi-language support",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,7 +15,12 @@
     "animation",
     "gsap",
     "mascot",
-    "interactive"
+    "interactive",
+    "responsive",
+    "dark-mode",
+    "captcha",
+    "i18n",
+    "tailwindcss"
   ],
   "author": "",
   "license": "MIT",
